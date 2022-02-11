@@ -2,6 +2,7 @@ import p5 from "p5";
 import { EndPoint } from "./models/end";
 import { FullMirror } from "./models/full_mirror";
 import { GameGrid } from "./models/game_grid";
+import { Direction } from "./models/game_object";
 import { HalfMirror } from "./models/half_mirror";
 import { Mirror } from "./models/mirror";
 import { Particle } from "./models/particle";
@@ -11,13 +12,15 @@ import { probability_sketch, quantum_sketch } from "./sketches";
 
 export class SpiegelDemo {
     private sketch = (p: p5) => {
-        const mirror1 = new HalfMirror(300, 600);
-        const mirror2 = new HalfMirror(600, 300);
-        const mirror3 = new FullMirror(300, 300);
-        const mirror4 = new FullMirror(600, 600);
-        const start = new StartPoint(50, 600);
-        const end1 = new EndPoint(600, 50);
-        const end2 = new EndPoint(850, 300);
+        const gameGrid = new GameGrid();
+        gameGrid.add_game_object(new StartPoint(), 0, 6);
+        gameGrid.add_game_object(new EndPoint(Direction.Up), 6, 0);
+        gameGrid.add_game_object(new EndPoint(), 9, 3);
+        gameGrid.add_game_object(new FullMirror(), 3, 3);
+        gameGrid.add_game_object(new FullMirror(), 6, 6);
+        gameGrid.add_game_object(new HalfMirror(), 3, 6);
+        gameGrid.add_game_object(new HalfMirror(), 6, 3);
+
 
         const particleList: QuantumParticle[] = [];
         const endList: QuantumParticle[] = [];
@@ -26,42 +29,43 @@ export class SpiegelDemo {
         // const endList: Particle[] = [];
 
 
-        const gameGrid = new GameGrid();
+        let is_drag = false;
+        p.mouseClicked = () => {
+            if (is_drag) {
+                gameGrid.grid_drag_end(p);
+                is_drag = false;
+
+            } else {
+                gameGrid.grid_clicked(p);
+            }
+        }
+
+        p.mouseDragged = () => {
+            if (!is_drag) {
+                is_drag = true;
+                gameGrid.grid_drag_start(p);
+            }
+        }
+
 
         p.setup = () => {
             const canvas = p.createCanvas(1000, 1000);
             canvas.parent("spiegel-demo");
-            p.background(0);
             p.angleMode(p.DEGREES);
             p.rectMode(p.CENTER);
+
+            // p.noLoop();
         }
 
         p.draw = () => {
             p.clear(0, 0, 0, 0);
-            p.background(0);
+            p.background(64);
 
-            p.push();
-            p.stroke(255);
-            p.line(50, 600, 600, 600);
-            p.line(300, 600, 300, 300);
-            p.line(300, 300, 850, 300);
-            p.line(600, 600, 600, 50);
-            p.pop();
-
-            mirror1.draw(p);
-            mirror2.draw(p);
-            mirror3.draw(p);
-            mirror4.draw(p);
-            start.draw(p);
-            end1.draw(p);
-            end2.draw(p);
+            gameGrid.draw(p);
 
             quantum_sketch(p, particleList, endList);
 
             // probability_sketch(p, particleList, endList);
-
-
-            gameGrid.draw(p);
         }
     }
 

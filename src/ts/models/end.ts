@@ -1,20 +1,19 @@
 import p5 from "p5";
+import { Direction, GameObject, getRotation } from "./game_object";
 
-export class EndPoint {
-    private x: number;
-    private y: number;
-    constructor(x: number, y: number){
-        this.x = x;
-        this.y = y;
+export class EndPoint extends GameObject{
+    constructor(dir = Direction.Right) {
+        super(dir);
     }
 
     draw(p: p5) {
         p.push();
-        p.translate(this.x, this.y);
 
         p.fill(0, 255, 0);
         p.stroke(255);
         p.strokeWeight(4);
+
+        p.rotate(getRotation(this.direction));
 
         p.beginShape();
         p.vertex(-15, -30);
@@ -26,5 +25,9 @@ export class EndPoint {
         p.arc(-15, 0, 45, 60, 90, 270);
 
         p.pop();
+    }
+
+    getDirections(): Direction[] {
+        return [];
     }
 }
