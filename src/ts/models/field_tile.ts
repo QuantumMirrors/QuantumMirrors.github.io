@@ -17,10 +17,7 @@ export class FieldTile {
         p.push();
 
         //translate to middle of the field
-        const fieldSize = Math.floor(p.width / this.gridSize);
-        const middle = Math.floor(fieldSize / 2);
-        const x_translate = middle + x_idx * fieldSize;
-        const y_translate = middle + y_idx * fieldSize;
+        const [x_translate, y_translate, middle] = FieldTile.calc_middle_of_tile(p, x_idx, y_idx, this.gridSize);
         p.translate(x_translate, y_translate);
 
         // p.stroke(60);
@@ -64,5 +61,13 @@ export class FieldTile {
 
     set_dragged(is_drag: boolean) {
         this.is_drag = is_drag;
+    }
+
+    static calc_middle_of_tile(p: p5, x_idx: number, y_idx: number, gridSize: number): [number, number, number]{
+        const fieldSize = Math.floor(p.width / gridSize);
+        const middle = Math.floor(fieldSize / 2);
+        const x_translate = middle + x_idx * fieldSize;
+        const y_translate = middle + y_idx * fieldSize;
+        return [x_translate, y_translate, middle];
     }
 }

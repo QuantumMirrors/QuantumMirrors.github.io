@@ -1,5 +1,5 @@
 import p5 from "p5";
-import { EndPoint } from "./models/end";
+import { EndPoint } from "./models/end_block";
 import { FullMirror } from "./models/full_mirror";
 import { GameGrid } from "./models/game_grid";
 import { Direction } from "./models/game_object";
@@ -7,7 +7,7 @@ import { HalfMirror } from "./models/half_mirror";
 import { Mirror } from "./models/mirror";
 import { Particle } from "./models/particle";
 import { QuantumParticle } from "./models/quantum_particle";
-import { StartPoint } from "./models/start";
+import { StartPoint } from "./models/start_block";
 import { probability_sketch, quantum_sketch } from "./sketches";
 
 export class SpiegelDemo {
@@ -20,14 +20,6 @@ export class SpiegelDemo {
         gameGrid.add_game_object(new FullMirror(), 6, 6);
         gameGrid.add_game_object(new HalfMirror(), 3, 6);
         gameGrid.add_game_object(new HalfMirror(), 6, 3);
-
-
-        const particleList: QuantumParticle[] = [];
-        const endList: QuantumParticle[] = [];
-
-        // const particleList: Particle[] = [];
-        // const endList: Particle[] = [];
-
 
         let is_drag = false;
         p.mouseClicked = () => {
@@ -62,10 +54,6 @@ export class SpiegelDemo {
             p.background(64);
 
             gameGrid.draw(p);
-
-            quantum_sketch(p, particleList, endList);
-
-            // probability_sketch(p, particleList, endList);
         }
     }
 

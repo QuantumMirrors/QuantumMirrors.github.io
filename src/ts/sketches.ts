@@ -1,10 +1,10 @@
 import p5 from "p5";
-import { EndPoint } from "./models/end";
+import { EndPoint } from "./models/end_block";
 import { FullMirror } from "./models/full_mirror";
 import { HalfMirror } from "./models/half_mirror";
 import { Particle } from "./models/particle";
 import { QuantumParticle } from "./models/quantum_particle";
-import { StartPoint } from "./models/start";
+import { StartPoint } from "./models/start_block";
 
 
 export function quantum_sketch(p: p5, particleList: QuantumParticle[], endList: QuantumParticle[]) {
