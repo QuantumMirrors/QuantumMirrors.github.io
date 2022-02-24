@@ -47,6 +47,7 @@ export class FieldTile {
         return this.gameObject;
     }
 
+    //true if it has an object other than the BaseObject
     check_object(): boolean{
         return !(this.gameObject instanceof BaseObject);
     }

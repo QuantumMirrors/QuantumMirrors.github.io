@@ -2,7 +2,8 @@ import p5 from "p5";
 import { EndPoint } from "./models/end_block";
 import { FullMirror } from "./models/full_mirror";
 import { GameGrid } from "./models/game_grid";
-import { Direction } from "./models/game_object";
+import { Direction, GameObject } from "./models/game_object";
+import { GameObjectPopup } from "./models/game_object_popup";
 import { HalfMirror } from "./models/half_mirror";
 import { Mirror } from "./models/mirror";
 import { Particle } from "./models/particle";
@@ -21,17 +22,14 @@ export class SpiegelDemo {
         gameGrid.add_game_object(new HalfMirror(), 3, 6);
         gameGrid.add_game_object(new HalfMirror(), 6, 3);
 
+        const gameObjectPopup = new GameObjectPopup(p, gameGrid);
+
+        let fpsSlider: p5.Element;
+        let particleSlider: p5.Element;
+        let particleCounter = 0;
+
+
         let is_drag = false;
-        p.mouseClicked = () => {
-            if (is_drag) {
-                gameGrid.grid_drag_end(p);
-                is_drag = false;
-
-            } else {
-                gameGrid.grid_clicked(p);
-            }
-        }
-
         p.mouseDragged = () => {
             if (!is_drag) {
                 is_drag = true;
@@ -42,18 +40,47 @@ export class SpiegelDemo {
 
         p.setup = () => {
             const canvas = p.createCanvas(1000, 1000);
-            canvas.parent("spiegel-demo");
+            canvas.parent("mirror-game");
+            canvas.mouseClicked( () => {
+                if (is_drag) {
+                    gameGrid.grid_drag_end(p);
+                    is_drag = false;
+    
+                } else {
+                    gameGrid.grid_clicked(p, (x, y, field_size) => {
+                        gameObjectPopup.show(x, y, field_size);
+                    });
+                }
+            });
+    
             p.angleMode(p.DEGREES);
             p.rectMode(p.CENTER);
+            p.frameRate(60);
 
+            fpsSlider = p.createSlider(0, 60, 60, 1);
+            particleSlider = p.createSlider(1, 10, 5, 0.5);
+            
             // p.noLoop();
         }
 
         p.draw = () => {
+            const fps = Number(fpsSlider.value());
+            if (fps == 0) {
+                return;
+            }
+            p.frameRate(fps);
+
             p.clear(0, 0, 0, 0);
             p.background(64);
 
             gameGrid.draw(p);
+
+            //counter for adding particles
+            particleCounter++;
+            if (particleCounter >= Number(particleSlider.value()) * 60) {
+                gameGrid.addParticle(p);
+                particleCounter = 0;
+            }
         }
     }
 

@@ -11,18 +11,17 @@ export class GameGrid {
     private gridSize = 10;
 
 
-    //noch ändern mit dem startpoint
+    //TODO: noch ändern mit dem startpoint
     private start: StartPoint;
     private startX: number;
     private startY: number;
 
-    //maybe anders
+    //TODO: maybe anders
     private is_drag = false;
     private dragX: number;
     private dragY: number;
 
     private particles: NewParticle[] = [];
-    private counter: number = 0;
 
     constructor() {
         //initialize grid
@@ -53,17 +52,14 @@ export class GameGrid {
         this.drawParticles(p);
 
         p.pop();
-
-        //counter for adding particles
-        this.counter++;
-        if (this.counter >= 300) {
-            const [x, y] = FieldTile.calc_middle_of_tile(p, this.startX, this.startY, this.gridSize);
-            this.particles.push(new NewParticle(x, y, this.start.direction));
-            this.counter = 0;
-        }
     }
 
     //particle handling
+    addParticle(p: p5) {
+        const [x, y] = FieldTile.calc_middle_of_tile(p, this.startX, this.startY, this.gridSize);
+        this.particles.push(new NewParticle(x, y, this.start.direction));
+    }
+
     private drawParticles(p: p5) {
         this.particles.forEach((particle) => {
             particle.move();
@@ -89,6 +85,7 @@ export class GameGrid {
         if (this.grid[y_idx][x_idx].check_object()) {
             const [obj_x, obj_y] = FieldTile.calc_middle_of_tile(p, x_idx, y_idx, this.gridSize);
             if (obj_x == x && obj_y == y) {
+                //TODO: refactor this later
                 let new_dirs = this.grid[y_idx][x_idx].get_directions(particle.getDirection());
                 if (new_dirs.length == 0) {
                     //end_point
@@ -108,9 +105,9 @@ export class GameGrid {
 
                     const new_particle = new NewParticle(x, y, new_dirs.pop()); //gets mirrored
                     new_particle.setSuperposition(true);
-                    new_particle.setPhase(shift_phase ? !particle.getPhase(): particle.getPhase());
+                    new_particle.setPhase(shift_phase ? !particle.getPhase() : particle.getPhase());
 
-                    
+
 
                     this.particles.push(new_particle);
                 }
@@ -120,16 +117,21 @@ export class GameGrid {
 
 
     //handling of clicking and dragging in the grid
-    grid_clicked(p: p5) {
+    grid_clicked(p: p5, trigger_popup: (x_idx:number, y_idx:number, field_size: number) => void) {
         if (!this.checkMousePosition(p)) {
             return;
         }
 
         const [x, y] = this.getIndex(p, p.mouseX, p.mouseY);
 
-        this.grid[y][x].rotate_object();
+        if(this.grid[y][x].check_object()){
+            this.grid[y][x].rotate_object();
+        }else{
+            trigger_popup(x, y, Math.floor(p.width / this.gridSize));
+        }
     }
 
+    //TODO: dragged object should change tile to dragged over tile (for laser beam)
     grid_drag_start(p: p5) {
         if (!this.checkMousePosition(p)) {
             return;
@@ -165,6 +167,7 @@ export class GameGrid {
 
     //handling of the laser beams
     private beam_loop_start(p: p5) {
+        //TODO: only do this if the dragged object is the startpoint
         if (this.is_drag) {
             this.beam_loop(this.getIndex(p, p.mouseX, p.mouseY), this.start.getDirections().pop(), p);
         } else {
@@ -172,6 +175,7 @@ export class GameGrid {
         }
     }
 
+    //TODO: bug when clicking (rotating) second half mirror, game breaks
     private beam_loop(startpoint: number[], dir: Direction, p: p5) {
         let idx_arr = [...startpoint];
         for (let i = 0; i < this.gridSize; i++) {
@@ -233,12 +237,13 @@ export class GameGrid {
         return !(x < 0 || x >= p.width || y < 0 || y >= p.height);
     }
 
+    //TODO: fix dragging/clicking bug after adding object
     add_game_object(obj: GameObject, x_idx: number, y_idx: number) {
         this.grid[y_idx][x_idx].change_object(obj);
         if (obj instanceof StartPoint) {
             this.start = obj;
             this.startX = x_idx;
             this.startY = y_idx;
-        }
+        } 
     }
 }
