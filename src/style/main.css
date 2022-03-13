@@ -1,0 +1,18 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: 100vw;
+}
+
+.topBar {
+  height: 3em;
+  width: 100%;
+  background: #280469;
+
+  display: flex;
+  align-items: center;
+}

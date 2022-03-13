@@ -6,19 +6,6 @@ import { GameObjectPopup } from "./models/game_object_popup";
 export class SpiegelDemo {
   private sketch = (p: p5) => {
     const gameGrid = new GameGrid();
-
-    const loadLevel = async (level: string) => {
-      //load level
-      gameGrid.clearGrid();
-      await import(`../res/levels/${level}`).then((level) => {
-        level
-          .default()
-          .forEach((game_object: [GameObject, number, number]) =>
-            gameGrid.add_game_object(...game_object)
-          );
-      });
-    };
-
     const gameObjectPopup = new GameObjectPopup(p, gameGrid);
 
     let fpsSlider: p5.Element;
@@ -26,6 +13,7 @@ export class SpiegelDemo {
     let particleCounter = 0;
     let levelSelect: any; // doesnt work with p5.Element
 
+    //TODO: fix dragging ... ITS BWOKEN
     let is_drag = false;
     p.mouseDragged = () => {
       if (!is_drag) {
@@ -35,6 +23,7 @@ export class SpiegelDemo {
     };
 
     p.setup = () => {
+      //setup canvas
       const canvas = p.createCanvas(1000, 1000);
       canvas.parent("mirror-game");
       canvas.mouseClicked(() => {
@@ -52,6 +41,7 @@ export class SpiegelDemo {
       p.rectMode(p.CENTER);
       p.frameRate(60);
 
+      //setup additional elements
       fpsSlider = p.createSlider(0, 60, 60, 1);
       particleSlider = p.createSlider(1, 10, 5, 0.5);
 
@@ -73,10 +63,20 @@ export class SpiegelDemo {
         }
       });
 
+      fpsSlider.parent("top-bar");
+      particleSlider.parent("top-bar");
+      levelSelect.parent("top-bar");
+
+      //load Level 1
+      levelSelect.selected("Level 1");
+      loadLevel("level1");
+
       // p.noLoop();
     };
 
     p.draw = () => {
+      console.log(is_drag);
+
       const fps = Number(fpsSlider.value());
       if (fps == 0) {
         return;
@@ -94,6 +94,18 @@ export class SpiegelDemo {
         gameGrid.addParticle(p);
         particleCounter = 0;
       }
+    };
+
+    const loadLevel = async (level: string) => {
+      //load level
+      gameGrid.clearGrid();
+      await import(`../res/levels/${level}`).then((level) => {
+        level
+          .default()
+          .forEach((game_object: [GameObject, number, number]) =>
+            gameGrid.add_game_object(...game_object)
+          );
+      });
     };
   };
 
