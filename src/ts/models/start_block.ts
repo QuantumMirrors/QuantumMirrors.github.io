@@ -3,36 +3,32 @@ import { Direction, GameObject, getRotation } from "./game_object";
 import { NewParticle } from "./new_particle";
 
 export class StartPoint extends GameObject {
-    constructor(dir = Direction.Right) {
-        super(dir);
-    }
+  constructor(dir = Direction.Right) {
+    super(dir);
+  }
 
-    draw(p: p5) {
-        p.push();
+  draw(p: p5) {
+    p.push();
 
-        p.fill(255, 255, 0);
-        p.stroke(255);
-        p.strokeWeight(4);
+    p.fill(255, 255, 0);
+    p.stroke(255);
+    p.strokeWeight(4);
 
-        p.rotate(getRotation(this.direction));
+    p.rotate(getRotation(this.direction));
 
-        p.beginShape();
-        p.vertex(-15, -30);
-        p.vertex(15, -30);
-        p.vertex(30, 0);
-        p.vertex(15, 30);
-        p.vertex(-15, 30);
-        p.vertex(-15, -30);
-        p.endShape();
+    p.beginShape();
+    p.vertex(-15, -30);
+    p.vertex(15, -30);
+    p.vertex(30, 0);
+    p.vertex(15, 30);
+    p.vertex(-15, 30);
+    p.vertex(-15, -30);
+    p.endShape();
 
-        p.pop();
+    p.pop();
+  }
 
-        
-    }
-
-    getDirections(): Direction[] {
-        return [this.direction];
-    }
-
-    
+  getDirections(): Direction[] {
+    return [this.direction];
+  }
 }
