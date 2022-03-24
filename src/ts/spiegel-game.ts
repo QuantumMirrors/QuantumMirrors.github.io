@@ -2,9 +2,13 @@ import p5 from "p5";
 import { GameGrid } from "./models/game_grid";
 import { GameObject } from "./models/game_object";
 import { GameObjectPopup } from "./models/game_object_popup";
+import { Tutorial } from "./tutorial";
+import { WelcomeScreen } from "./welcomescreen";
 
 export class SpiegelDemo {
   private sketch = (p: p5) => {
+    let canvas: p5.Renderer;
+
     const gameGrid = new GameGrid();
     const gameObjectPopup = new GameObjectPopup(p, gameGrid);
 
@@ -12,6 +16,9 @@ export class SpiegelDemo {
     let particleSlider: p5.Element;
     let particleCounter = 0;
     let levelSelect: any; // doesnt work with p5.Element
+
+    let tutorial: Tutorial;
+    let welcome: WelcomeScreen;
 
     //TODO: fix dragging ... ITS BWOKEN
     let is_drag = false;
@@ -24,7 +31,7 @@ export class SpiegelDemo {
 
     p.setup = () => {
       //setup canvas
-      const canvas = p.createCanvas(1000, 1000);
+      canvas = p.createCanvas(1000, 1000);
       canvas.parent("mirror-game");
       canvas.mouseClicked(() => {
         if (is_drag) {
@@ -36,6 +43,14 @@ export class SpiegelDemo {
           });
         }
       });
+
+      p.windowResized = () => {
+        const canvasPos = canvas.position() as { x: number; y: number };
+        const height = p.windowHeight - canvasPos.y;
+        const width = p.windowWidth;
+        const size = height >= width ? width : height;
+        p.resizeCanvas(size, size);
+      };
 
       p.angleMode(p.DEGREES);
       p.rectMode(p.CENTER);
@@ -54,7 +69,9 @@ export class SpiegelDemo {
       levelSelect.changed(async () => {
         const level: string = levelSelect.value();
         if (level == "Tutorial") {
-          //TODO: implement Tutorial
+          await loadLevel("tutorial");
+          tutorial = new Tutorial(canvas, p, gameGrid.gridSize);
+          tutorial.start();
         } else if (level == "Sandbox") {
           gameGrid.clearGrid();
         } else {
@@ -63,19 +80,34 @@ export class SpiegelDemo {
         }
       });
 
-      fpsSlider.parent("top-bar");
-      particleSlider.parent("top-bar");
-      levelSelect.parent("top-bar");
+      fpsSlider.parent("controls");
+      particleSlider.parent("controls");
+      levelSelect.parent("controls");
 
-      //load Level 1
-      levelSelect.selected("Level 1");
-      loadLevel("level1");
+      //load tutorial
+      levelSelect.selected("Tutorial");
+      loadLevel("tutorial");
 
       // p.noLoop();
+
+      tutorial = new Tutorial(canvas, p, gameGrid.gridSize);
+      welcome = new WelcomeScreen(
+        () => {
+          levelSelect.selected("Level 1");
+          loadLevel("level1");
+          welcome.remove();
+        },
+        () => {
+          welcome.remove();
+          tutorial.start();
+        }
+      );
+
+      welcome.start();
     };
 
     p.draw = () => {
-      console.log(is_drag);
+      // console.log(is_drag);
 
       const fps = Number(fpsSlider.value());
       if (fps == 0) {
@@ -84,7 +116,7 @@ export class SpiegelDemo {
       p.frameRate(fps);
 
       p.clear(0, 0, 0, 0);
-      p.background(64);
+      p.background("#334152");
 
       gameGrid.draw(p);
 

@@ -8,7 +8,7 @@ import { StartPoint } from "./start_block";
 export class GameGrid {
   // 10 x 10 grid
   private grid: FieldTile[][];
-  private gridSize = 10;
+  public gridSize = 10;
 
   //TODO: noch ändern mit dem startpoint
   private start: StartPoint;
@@ -51,7 +51,7 @@ export class GameGrid {
     if(!this.start){
         return;
     }
-    
+
     const [x, y] = FieldTile.calc_middle_of_tile(
       p,
       this.startX,

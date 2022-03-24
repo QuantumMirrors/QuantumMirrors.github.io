@@ -1,6 +1,5 @@
 import p5 from "p5";
 import { Direction, GameObject, getRotation } from "./game_object";
-import { NewParticle } from "./new_particle";
 
 export class StartPoint extends GameObject {
   constructor(dir = Direction.Right) {
