@@ -51,6 +51,7 @@ export class SpiegelDemo {
         const size = height >= width ? width : height;
         p.resizeCanvas(size, size);
       };
+      p.windowResized();
 
       p.angleMode(p.DEGREES);
       p.rectMode(p.CENTER);

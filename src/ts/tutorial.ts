@@ -75,10 +75,10 @@ export class Tutorial {
       canvasPos.x + x,
       canvasPos.y + y,
       circleSize,
-      canvasPos.x + this.currentTutorialStep.cardX,
-      canvasPos.y + this.currentTutorialStep.cardY,
-      this.currentTutorialStep.cardWidth,
-      this.currentTutorialStep.cardHeight
+      canvasPos.x + this.currentTutorialStep.cardX * (canvasSize.width/1000),
+      canvasPos.y + this.currentTutorialStep.cardY * (canvasSize.height/1000),
+      this.currentTutorialStep.cardWidth * (canvasSize.width/1000),
+      this.currentTutorialStep.cardHeight * (canvasSize.height/1000)
     );
     tut_updateText(this.currentTutorialStep.html);
   }
