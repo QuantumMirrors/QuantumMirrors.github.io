@@ -311,6 +311,9 @@ class GameGrid {
             return;
         }
         const [x_idx, y_idx] = this.getIndex(p, x, y);
+        if (x_idx >= this.gridSize || y_idx >= this.gridSize) {
+            return;
+        }
         if (this.grid[y_idx][x_idx].check_object()) {
             const [obj_x, obj_y] = field_tile_1.FieldTile.calc_middle_of_tile(p, x_idx, y_idx, this.gridSize);
             if (obj_x == x && obj_y == y) {
@@ -1135,20 +1138,37 @@ exports["default"] = hybrids_1.define({
       </div>
 
       <style>
-        .tutorial-card {
-          height: ${cardHeight}px;
-          width: ${cardWidth}px;
-
-          left: ${cardX}px;
-          top: ${cardY}px;
-        }
-
         .tutorial {
           position: absolute;
           top: 0;
           right: 0;
           bottom: 0;
           left: 0;
+        }
+
+        @media screen and (min-width: 1000px) {
+          .tutorial-card {
+            height: ${cardHeight}px;
+            width: ${cardWidth}px;
+            left: ${cardX}px;
+            top: ${cardY}px;
+          }
+        }
+        @media screen and (max-width: 1000px) {
+          .tutorial-card {
+            height: 40%;
+            width: 98%;
+            <!-- left: 0; -->
+            <!-- bottom: 0; -->
+            
+          }
+
+          .tutorial {
+            display: flex;
+            justify-content: center;
+            align-items: end;
+            padding-bottom: 1%;
+          }
         }
 
         .tutorial-card {
@@ -1415,11 +1435,14 @@ const cardText = () => hybrids_1.html `
   </p>
   <p>
     The tutorial will guide you through the first steps in this game and provide
-    some explanations for the funky physics, that cause the quantum effects, which
-    you will encounter in this game.
+    some explanations for the funky physics, that cause the quantum effects,
+    which you will encounter in this game.
   </p>
 
-  <p>You can choose to play the tutorial for some guidance and in-depth explanations or skip it and dive right into the game.</p>
+  <p>
+    You can choose to play the tutorial for some guidance and in-depth
+    explanations or skip it and dive right into the game.
+  </p>
 `;
 function skipTutorial(host) {
     hybrids_1.dispatch(host, "custom-change", { detail: "skipTutorial" });
@@ -1463,9 +1486,16 @@ exports["default"] = hybrids_1.define({
         .welcome-card {
           height: ${cardHeight}px;
           width: ${cardWidth}px;
-
-          left: ${cardX}px;
-          top: ${cardY}px;
+        }
+        @media screen and (min-width: 1000px) {
+          .welcome-card {
+            bottom: ${cardY}px;
+          }
+        }
+        @media screen and (max-width: 500px) {
+          .welcome-card {
+            height: ${cardHeight * 1.2}px;
+          }
         }
 
         .welcome {
@@ -1474,6 +1504,10 @@ exports["default"] = hybrids_1.define({
           right: 0;
           bottom: 0;
           left: 0;
+
+          display: flex;
+          justify-content: center;
+          align-items: center;
         }
 
         .welcome-card {
@@ -1481,7 +1515,7 @@ exports["default"] = hybrids_1.define({
           color: white;
           font-family: "Arial";
 
-          position: absolute;
+          position: relative;
 
           border-radius: 1em;
 
@@ -1549,7 +1583,7 @@ class WelcomeScreen {
                 skipTutorialCallback();
             }
         });
-        welcome_component_1.welcome_update(this.overlay, 400, 100, 500, 300);
+        welcome_component_1.welcome_update(this.overlay, 400, 300, 500, 300);
     }
     start() {
         document.body.append(this.overlay);
