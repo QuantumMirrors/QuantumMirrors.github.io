@@ -115,20 +115,37 @@ export default define<TutorialOverlay>({
       </div>
 
       <style>
-        .tutorial-card {
-          height: ${cardHeight}px;
-          width: ${cardWidth}px;
-
-          left: ${cardX}px;
-          top: ${cardY}px;
-        }
-
         .tutorial {
           position: absolute;
           top: 0;
           right: 0;
           bottom: 0;
           left: 0;
+        }
+
+        @media screen and (min-width: 1000px) {
+          .tutorial-card {
+            height: ${cardHeight}px;
+            width: ${cardWidth}px;
+            left: ${cardX}px;
+            top: ${cardY}px;
+          }
+        }
+        @media screen and (max-width: 1000px) {
+          .tutorial-card {
+            height: 40%;
+            width: 98%;
+            <!-- left: 0; -->
+            <!-- bottom: 0; -->
+            
+          }
+
+          .tutorial {
+            display: flex;
+            justify-content: center;
+            align-items: end;
+            padding-bottom: 1%;
+          }
         }
 
         .tutorial-card {

@@ -34,11 +34,14 @@ const cardText = () => html`
   </p>
   <p>
     The tutorial will guide you through the first steps in this game and provide
-    some explanations for the funky physics, that cause the quantum effects, which
-    you will encounter in this game.
+    some explanations for the funky physics, that cause the quantum effects,
+    which you will encounter in this game.
   </p>
 
-  <p>You can choose to play the tutorial for some guidance and in-depth explanations or skip it and dive right into the game.</p>
+  <p>
+    You can choose to play the tutorial for some guidance and in-depth
+    explanations or skip it and dive right into the game.
+  </p>
 `;
 
 function skipTutorial(host: any) {
@@ -86,9 +89,16 @@ export default define<WelcomeOverlay>({
         .welcome-card {
           height: ${cardHeight}px;
           width: ${cardWidth}px;
-
-          left: ${cardX}px;
-          top: ${cardY}px;
+        }
+        @media screen and (min-width: 1000px) {
+          .welcome-card {
+            bottom: ${cardY}px;
+          }
+        }
+        @media screen and (max-width: 500px) {
+          .welcome-card {
+            height: ${cardHeight * 1.2}px;
+          }
         }
 
         .welcome {
@@ -97,6 +107,10 @@ export default define<WelcomeOverlay>({
           right: 0;
           bottom: 0;
           left: 0;
+
+          display: flex;
+          justify-content: center;
+          align-items: center;
         }
 
         .welcome-card {
@@ -104,7 +118,7 @@ export default define<WelcomeOverlay>({
           color: white;
           font-family: "Arial";
 
-          position: absolute;
+          position: relative;
 
           border-radius: 1em;
 

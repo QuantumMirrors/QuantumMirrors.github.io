@@ -83,6 +83,9 @@ export class GameGrid {
     }
 
     const [x_idx, y_idx] = this.getIndex(p, x, y);
+    if(x_idx >= this.gridSize || y_idx >= this.gridSize){
+      return;
+    }
     
     if (this.grid[y_idx][x_idx].check_object()) {
       const [obj_x, obj_y] = FieldTile.calc_middle_of_tile(
