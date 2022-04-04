@@ -85,7 +85,8 @@ export class HalfMirror extends Mirror {
     }
   }
 
-  override draw(p: p5) {
+  //override
+  draw(p: p5) {
     p.push();
 
     p.rotate(getRotation(this.direction) - 45);
