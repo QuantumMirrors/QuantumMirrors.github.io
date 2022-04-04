@@ -967,6 +967,7 @@ class SpiegelDemo {
                     const size = height >= width ? width : height;
                     p.resizeCanvas(size, size);
                 };
+                p.windowResized();
                 p.angleMode(p.DEGREES);
                 p.rectMode(p.CENTER);
                 p.frameRate(60);
@@ -1248,7 +1249,7 @@ class Tutorial {
         const circleSize = canvasSize.width /
             1.6 /
             ((_a = this.currentTutorialStep.circleScale) !== null && _a !== void 0 ? _a : this.gridSize);
-        tutorial_component_1.tut_update(this.overlay, canvasPos.x + x, canvasPos.y + y, circleSize, canvasPos.x + this.currentTutorialStep.cardX, canvasPos.y + this.currentTutorialStep.cardY, this.currentTutorialStep.cardWidth, this.currentTutorialStep.cardHeight);
+        tutorial_component_1.tut_update(this.overlay, canvasPos.x + x, canvasPos.y + y, circleSize, canvasPos.x + this.currentTutorialStep.cardX * (canvasSize.width / 1000), canvasPos.y + this.currentTutorialStep.cardY * (canvasSize.height / 1000), this.currentTutorialStep.cardWidth * (canvasSize.width / 1000), this.currentTutorialStep.cardHeight * (canvasSize.height / 1000));
         tutorial_component_1.tut_updateText(this.currentTutorialStep.html);
     }
     nextTutorialStep() {
