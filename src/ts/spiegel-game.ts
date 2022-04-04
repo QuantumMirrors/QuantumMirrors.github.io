@@ -16,25 +16,41 @@ export class SpiegelDemo {
     let particleSlider: p5.Element;
     let particleCounter = 0;
     let levelSelect: any; // doesnt work with p5.Element
+    let playButton: p5.Element;
 
     let tutorial: Tutorial;
     let welcome: WelcomeScreen;
 
-    //TODO: fix dragging ... ITS BWOKEN
     let is_drag = false;
-    p.mouseDragged = () => {
-      if (!is_drag) {
-        is_drag = true;
-        gameGrid.grid_drag_start(p);
-      }
-    };
 
     p.setup = () => {
       //setup canvas
       canvas = p.createCanvas(1000, 1000);
       canvas.parent("mirror-game");
-      canvas.mouseClicked(() => {
-        if (is_drag) {
+
+      canvas.mousePressed(() => {
+        // console.log("press");
+        setTimeout(() => {
+          if(p.mouseIsPressed){
+            is_drag = true;
+            gameGrid.grid_drag_start(p);
+          }
+        }, 250);
+      });
+
+      canvas.touchStarted(() => {
+        // console.log("touch");
+        setTimeout(() => {
+          if(p.mouseIsPressed){
+            is_drag = true;
+            gameGrid.grid_drag_start(p);
+          }
+        }, 250);
+      })
+
+      canvas.mouseReleased(() => {
+        // console.log("release");
+        if(is_drag){
           gameGrid.grid_drag_end(p);
           is_drag = false;
         } else {
@@ -42,7 +58,17 @@ export class SpiegelDemo {
             gameObjectPopup.show(x, y, field_size);
           });
         }
-      });
+      })
+
+      canvas.touchEnded(() => {
+        // console.log("touchend");
+        if(is_drag){
+          gameGrid.grid_drag_end(p);
+          is_drag = false;
+        }
+      })
+
+
 
       p.windowResized = () => {
         const canvasPos = canvas.position() as { x: number; y: number };
@@ -58,7 +84,7 @@ export class SpiegelDemo {
       p.frameRate(60);
 
       //setup additional elements
-      fpsSlider = p.createSlider(0, 60, 60, 1);
+      fpsSlider = p.createSlider(1, 60, 60, 1);
       particleSlider = p.createSlider(1, 10, 5, 0.5);
 
       levelSelect = p.createSelect();
@@ -81,8 +107,20 @@ export class SpiegelDemo {
         }
       });
 
+      playButton = p.createButton("Pause");
+      playButton.mousePressed(() => {
+        if (playButton.html() === "Play") {
+          p.loop();
+          playButton.html("Pause");
+        } else if (playButton.html() === "Pause") {
+          p.noLoop();
+          playButton.html("Play");
+        }
+      });
+
       fpsSlider.parent("controls");
       particleSlider.parent("controls");
+      playButton.parent("controls");
       levelSelect.parent("controls");
 
       //load tutorial

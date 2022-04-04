@@ -134,17 +134,13 @@ export default define<TutorialOverlay>({
         @media screen and (max-width: 1000px) {
           .tutorial-card {
             height: 40%;
-            width: 98%;
-            <!-- left: 0; -->
-            <!-- bottom: 0; -->
-            
+            width: 100%;
           }
 
           .tutorial {
             display: flex;
             justify-content: center;
             align-items: end;
-            padding-bottom: 1%;
           }
         }
 
@@ -164,16 +160,31 @@ export default define<TutorialOverlay>({
           margin: 1em;
         }
 
+        .tutorial-card > button {
+          display: flex;
+          border-radius: 0.3em;
+          border: none;
+          background: #4f46e5;
+          font-weight: bold;
+          padding: 1.5%;
+        }
+
+        .tutorial-card > button:hover {
+          background: #a5b4fc;
+        }
+
         .tutorial-card > #previousButton {
           position: absolute;
           left: 0;
           bottom: 0;
+          color: lightgray;
         }
 
         .tutorial-card > #nextButton {
           position: absolute;
           right: 0;
           bottom: 0;
+          color: white;
         }
 
         .tutorial-card > h1,

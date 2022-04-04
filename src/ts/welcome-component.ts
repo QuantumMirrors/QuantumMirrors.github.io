@@ -129,16 +129,31 @@ export default define<WelcomeOverlay>({
           margin: 1em;
         }
 
+        .welcome-card > button {
+          display: flex;
+          border-radius: 0.3em;
+          border: none;
+          background: #4f46e5;
+          font-weight: bold;
+          padding: 1.5%;
+        }
+
+        .welcome-card > button:hover {
+          background: #a5b4fc;
+        }
+
         .welcome-card > #skipButton {
           position: absolute;
           left: 0;
           bottom: 0;
+          color: lightgray;
         }
 
         .welcome-card > #startButton {
           position: absolute;
           right: 0;
           bottom: 0;
+          color: white;
         }
 
         .welcome-card > h1,

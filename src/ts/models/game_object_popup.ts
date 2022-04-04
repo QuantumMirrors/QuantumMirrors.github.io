@@ -31,7 +31,7 @@ export class GameObjectPopup {
     // this.div3.style("background-color", "black");
 
     const button1 = p.createButton("FM");
-    button1.mousePressed(() => {
+    button1.mouseClicked(() => {
       gameGrid.add_game_object(new FullMirror(), this.x, this.y);
       this.hide();
     });
@@ -40,7 +40,7 @@ export class GameObjectPopup {
     button1.parent(this.div3);
 
     const button2 = p.createButton("HM");
-    button2.mousePressed(() => {
+    button2.mouseClicked(() => {
       gameGrid.add_game_object(new HalfMirror(), this.x, this.y);
       this.hide();
     });
@@ -49,7 +49,7 @@ export class GameObjectPopup {
     button2.parent(this.div3);
 
     const button3 = p.createButton("SP");
-    button3.mousePressed(() => {
+    button3.mouseClicked(() => {
       gameGrid.add_game_object(new StartPoint(), this.x, this.y);
       this.hide();
     });
@@ -58,7 +58,7 @@ export class GameObjectPopup {
     button3.parent(this.div3);
 
     const button4 = p.createButton("EP");
-    button4.mousePressed(() => {
+    button4.mouseClicked(() => {
       gameGrid.add_game_object(new EndPoint(), this.x, this.y);
       this.hide();
     });
@@ -70,7 +70,8 @@ export class GameObjectPopup {
   }
 
   hide() {
-    this.div3.hide();
+    // this.div3.hide();
+    this.dvi1.position(-200, -200);
   }
 
   show(x: number, y: number, field_size: number) {
@@ -82,6 +83,6 @@ export class GameObjectPopup {
     this.div2.size(field_size, field_size);
     this.div3.size(field_size * 0.9, field_size * 0.9);
 
-    this.div3.show();
+    // this.div3.show();
   }
 }
