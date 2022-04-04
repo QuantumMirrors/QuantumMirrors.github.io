@@ -85,7 +85,7 @@ export class SpiegelDemo {
 
       //setup additional elements
       fpsSlider = p.createSlider(1, 60, 60, 1);
-      particleSlider = p.createSlider(1, 10, 5, 0.5);
+      particleSlider = p.createSlider(-10, -1, -5, 0.5); //negative, because high number == low particle count
 
       levelSelect = p.createSelect();
       levelSelect.option("Tutorial");
@@ -161,7 +161,7 @@ export class SpiegelDemo {
 
       //counter for adding particles
       particleCounter++;
-      if (particleCounter >= Number(particleSlider.value()) * 60) {
+      if (particleCounter >= Math.abs(Number(particleSlider.value())) * 60) {
         gameGrid.addParticle(p);
         particleCounter = 0;
       }

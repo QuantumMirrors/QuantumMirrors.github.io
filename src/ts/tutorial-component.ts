@@ -161,7 +161,6 @@ export default define<TutorialOverlay>({
         }
 
         .tutorial-card > button {
-          display: flex;
           border-radius: 0.3em;
           border: none;
           background: #4f46e5;
