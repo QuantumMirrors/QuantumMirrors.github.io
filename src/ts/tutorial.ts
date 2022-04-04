@@ -103,20 +103,20 @@ export class Tutorial {
 }
 
 interface TutorialStep {
-  objectX: number;
-  objectY: number;
+  objectX: number; //index
+  objectY: number; //index
   circleScale?: number;
-  cardX: number;
-  cardY: number;
-  cardWidth: number;
-  cardHeight: number;
+  cardX: number; //css em
+  cardY: number; //css em
+  cardWidth: number; //css em
+  cardHeight: number; //css em
   html: UpdateFunctionWithMethods<unknown>;
 }
 
 const tutorial_steps: TutorialStep[] = [
   {
-    objectX: -5,
-    objectY: 6,
+    objectX: -2,
+    objectY: -2,
     cardX: 200,
     cardY: 100,
     cardWidth: 300,
