@@ -18,6 +18,7 @@ export declare class GameGrid {
     grid_clicked(p: p5, trigger_popup: (x_idx: number, y_idx: number, field_size: number) => void): void;
     grid_drag_start(p: p5): void;
     grid_drag_end(p: p5): void;
+    grid_drag_move(p: p5): void;
     private beam_loop_start;
     private beam_loop;
     private draw_beam;

@@ -257,7 +257,7 @@ const start_block_1 = __webpack_require__(461);
 class GameGrid {
     constructor() {
         this.gridSize = 10;
-        //TODO: maybe anders
+        //TODO: maybe anders, maybe auch einfach nicht
         this.is_drag = false;
         //adds the direction to the index_array
         this.idxCalc = (arr, dir) => arr.map((num, idx) => num + dir[idx]);
@@ -280,6 +280,9 @@ class GameGrid {
         this.grid.forEach((row, y_idx) => row.forEach((field_tile, x_idx) => field_tile.draw(p, x_idx, y_idx)));
         //draw particles
         this.drawParticles(p);
+        if (this.is_drag) {
+            this.grid_drag_move(p);
+        }
         p.pop();
     }
     //particle handling
@@ -345,10 +348,14 @@ class GameGrid {
     }
     //handling of clicking and dragging in the grid
     grid_clicked(p, trigger_popup) {
+        console.log("grid clicked");
         if (!this.checkMousePosition(p)) {
             return;
         }
         const [x, y] = this.getIndex(p, p.mouseX, p.mouseY);
+        if (x >= this.gridSize || y >= this.gridSize) {
+            return;
+        }
         if (this.grid[y][x].check_object()) {
             this.grid[y][x].rotate_object();
         }
@@ -356,12 +363,18 @@ class GameGrid {
             trigger_popup(x, y, Math.floor(p.width / this.gridSize));
         }
     }
-    //TODO: dragged object should change tile to dragged over tile (for laser beam)
     grid_drag_start(p) {
         if (!this.checkMousePosition(p)) {
             return;
         }
-        [this.dragX, this.dragY] = this.getIndex(p, p.mouseX, p.mouseY);
+        const [x, y] = this.getIndex(p, p.mouseX, p.mouseY);
+        if (x >= this.gridSize || y >= this.gridSize) {
+            return;
+        }
+        [this.dragX, this.dragY] = [x, y];
+        if (!this.grid[this.dragY][this.dragX].check_object()) {
+            return;
+        }
         this.is_drag = true;
         this.grid[this.dragY][this.dragX].set_dragged(true);
     }
@@ -370,9 +383,12 @@ class GameGrid {
             this.grid[this.dragY][this.dragX].set_dragged(false);
             return;
         }
+        if (!this.grid[this.dragY][this.dragX].check_object()) {
+            return;
+        }
         const [end_x, end_y] = this.getIndex(p, p.mouseX, p.mouseY);
         //swap dragged object with target object
-        let tmp = this.grid[this.dragY][this.dragX].get_object();
+        const tmp = this.grid[this.dragY][this.dragX].get_object();
         this.grid[this.dragY][this.dragX].change_object(this.grid[end_y][end_x].get_object());
         this.grid[end_y][end_x].change_object(tmp);
         if (tmp instanceof start_block_1.StartPoint) {
@@ -380,19 +396,37 @@ class GameGrid {
             this.startY = end_y;
         }
         this.is_drag = false;
+        // this.grid[end_y][end_x].set_dragged(false);
         this.grid[this.dragY][this.dragX].set_dragged(false);
+    }
+    grid_drag_move(p) {
+        if (!this.checkMousePosition(p)) {
+            this.grid[this.dragY][this.dragX].set_dragged(false);
+            return;
+        }
+        if (!this.grid[this.dragY][this.dragX].check_object()) {
+            return;
+        }
+        const [end_x, end_y] = this.getIndex(p, p.mouseX, p.mouseY);
+        if (end_x === this.dragX && end_y === this.dragY) {
+            return;
+        }
+        //swap dragged object with target object
+        const tmp = this.grid[this.dragY][this.dragX].get_object();
+        this.grid[this.dragY][this.dragX].change_object(this.grid[end_y][end_x].get_object());
+        this.grid[end_y][end_x].change_object(tmp);
+        if (tmp instanceof start_block_1.StartPoint) {
+            this.startX = end_x;
+            this.startY = end_y;
+        }
+        this.grid[end_y][end_x].set_dragged(true);
+        this.grid[this.dragY][this.dragX].set_dragged(false);
+        [this.dragX, this.dragY] = [end_x, end_y];
     }
     //handling of the laser beams
     beam_loop_start(p) {
-        //TODO: only do this if the dragged object is the startpoint
-        if (this.is_drag) {
-            this.beam_loop(this.getIndex(p, p.mouseX, p.mouseY), this.start.getDirections().pop(), p);
-        }
-        else {
-            this.beam_loop([this.startX, this.startY], this.start.getDirections().pop(), p);
-        }
+        this.beam_loop([this.startX, this.startY], this.start.getDirections().pop(), p);
     }
-    //TODO: bug when clicking (rotating) second half mirror, game breaks
     beam_loop(startpoint, dir, p) {
         let idx_arr = [...startpoint];
         for (let i = 0; i < this.gridSize; i++) {
@@ -403,6 +437,10 @@ class GameGrid {
             }
             if (this.grid[idx_arr[1]][idx_arr[0]].check_object()) {
                 this.draw_beam(startpoint[0], startpoint[1], idx_arr[0], idx_arr[1], p);
+                //causes the loop/game to crash, when not filtered out
+                if (this.grid[idx_arr[1]][idx_arr[0]].get_object() instanceof start_block_1.StartPoint) {
+                    break;
+                }
                 //get new directions from next object and repeat beam_loop
                 let new_dirs = this.grid[idx_arr[1]][idx_arr[0]].get_directions(dir);
                 new_dirs.forEach((dir) => this.beam_loop([...idx_arr], dir, p));
@@ -438,7 +476,6 @@ class GameGrid {
     checkPosition(p, x, y) {
         return !(x < 0 || x >= p.width || y < 0 || y >= p.height);
     }
-    //TODO: fix dragging/clicking bug after adding object
     add_game_object(obj, x_idx, y_idx) {
         this.grid[y_idx][x_idx].change_object(obj);
         if (obj instanceof start_block_1.StartPoint) {
@@ -560,7 +597,7 @@ class GameObjectPopup {
         this.div3.center();
         // this.div3.style("background-color", "black");
         const button1 = p.createButton("FM");
-        button1.mousePressed(() => {
+        button1.mouseClicked(() => {
             gameGrid.add_game_object(new full_mirror_1.FullMirror(), this.x, this.y);
             this.hide();
         });
@@ -568,7 +605,7 @@ class GameObjectPopup {
         button1.style("height", "50%");
         button1.parent(this.div3);
         const button2 = p.createButton("HM");
-        button2.mousePressed(() => {
+        button2.mouseClicked(() => {
             gameGrid.add_game_object(new half_mirror_1.HalfMirror(), this.x, this.y);
             this.hide();
         });
@@ -576,7 +613,7 @@ class GameObjectPopup {
         button2.style("height", "50%");
         button2.parent(this.div3);
         const button3 = p.createButton("SP");
-        button3.mousePressed(() => {
+        button3.mouseClicked(() => {
             gameGrid.add_game_object(new start_block_1.StartPoint(), this.x, this.y);
             this.hide();
         });
@@ -584,7 +621,7 @@ class GameObjectPopup {
         button3.style("height", "50%");
         button3.parent(this.div3);
         const button4 = p.createButton("EP");
-        button4.mousePressed(() => {
+        button4.mouseClicked(() => {
             gameGrid.add_game_object(new end_block_1.EndPoint(), this.x, this.y);
             this.hide();
         });
@@ -594,7 +631,8 @@ class GameObjectPopup {
         this.hide();
     }
     hide() {
-        this.div3.hide();
+        // this.div3.hide();
+        this.dvi1.position(-200, -200);
     }
     show(x, y, field_size) {
         this.x = x;
@@ -603,7 +641,7 @@ class GameObjectPopup {
         this.dvi1.size(field_size, field_size);
         this.div2.size(field_size, field_size);
         this.div3.size(field_size * 0.9, field_size * 0.9);
-        this.div3.show();
+        // this.div3.show();
     }
 }
 exports.GameObjectPopup = GameObjectPopup;
@@ -938,21 +976,34 @@ class SpiegelDemo {
             let particleSlider;
             let particleCounter = 0;
             let levelSelect; // doesnt work with p5.Element
+            let playButton;
             let tutorial;
             let welcome;
-            //TODO: fix dragging ... ITS BWOKEN
             let is_drag = false;
-            p.mouseDragged = () => {
-                if (!is_drag) {
-                    is_drag = true;
-                    gameGrid.grid_drag_start(p);
-                }
-            };
             p.setup = () => {
                 //setup canvas
                 canvas = p.createCanvas(1000, 1000);
                 canvas.parent("mirror-game");
-                canvas.mouseClicked(() => {
+                canvas.mousePressed(() => {
+                    // console.log("press");
+                    setTimeout(() => {
+                        if (p.mouseIsPressed) {
+                            is_drag = true;
+                            gameGrid.grid_drag_start(p);
+                        }
+                    }, 250);
+                });
+                canvas.touchStarted(() => {
+                    // console.log("touch");
+                    setTimeout(() => {
+                        if (p.mouseIsPressed) {
+                            is_drag = true;
+                            gameGrid.grid_drag_start(p);
+                        }
+                    }, 250);
+                });
+                canvas.mouseReleased(() => {
+                    // console.log("release");
                     if (is_drag) {
                         gameGrid.grid_drag_end(p);
                         is_drag = false;
@@ -961,6 +1012,13 @@ class SpiegelDemo {
                         gameGrid.grid_clicked(p, (x, y, field_size) => {
                             gameObjectPopup.show(x, y, field_size);
                         });
+                    }
+                });
+                canvas.touchEnded(() => {
+                    // console.log("touchend");
+                    if (is_drag) {
+                        gameGrid.grid_drag_end(p);
+                        is_drag = false;
                     }
                 });
                 p.windowResized = () => {
@@ -975,7 +1033,7 @@ class SpiegelDemo {
                 p.rectMode(p.CENTER);
                 p.frameRate(60);
                 //setup additional elements
-                fpsSlider = p.createSlider(0, 60, 60, 1);
+                fpsSlider = p.createSlider(1, 60, 60, 1);
                 particleSlider = p.createSlider(1, 10, 5, 0.5);
                 levelSelect = p.createSelect();
                 levelSelect.option("Tutorial");
@@ -997,8 +1055,20 @@ class SpiegelDemo {
                         yield loadLevel(`level${level.slice(-1)}`);
                     }
                 }));
+                playButton = p.createButton("Pause");
+                playButton.mousePressed(() => {
+                    if (playButton.html() === "Play") {
+                        p.loop();
+                        playButton.html("Pause");
+                    }
+                    else if (playButton.html() === "Pause") {
+                        p.noLoop();
+                        playButton.html("Play");
+                    }
+                });
                 fpsSlider.parent("controls");
                 particleSlider.parent("controls");
+                playButton.parent("controls");
                 levelSelect.parent("controls");
                 //load tutorial
                 levelSelect.selected("Tutorial");
@@ -1157,17 +1227,13 @@ exports["default"] = hybrids_1.define({
         @media screen and (max-width: 1000px) {
           .tutorial-card {
             height: 40%;
-            width: 98%;
-            <!-- left: 0; -->
-            <!-- bottom: 0; -->
-            
+            width: 100%;
           }
 
           .tutorial {
             display: flex;
             justify-content: center;
             align-items: end;
-            padding-bottom: 1%;
           }
         }
 
@@ -1187,16 +1253,31 @@ exports["default"] = hybrids_1.define({
           margin: 1em;
         }
 
+        .tutorial-card > button {
+          display: flex;
+          border-radius: 0.3em;
+          border: none;
+          background: #4f46e5;
+          font-weight: bold;
+          padding: 1.5%;
+        }
+
+        .tutorial-card > button:hover {
+          background: #a5b4fc;
+        }
+
         .tutorial-card > #previousButton {
           position: absolute;
           left: 0;
           bottom: 0;
+          color: lightgray;
         }
 
         .tutorial-card > #nextButton {
           position: absolute;
           right: 0;
           bottom: 0;
+          color: white;
         }
 
         .tutorial-card > h1,
@@ -1526,16 +1607,31 @@ exports["default"] = hybrids_1.define({
           margin: 1em;
         }
 
+        .welcome-card > button {
+          display: flex;
+          border-radius: 0.3em;
+          border: none;
+          background: #4f46e5;
+          font-weight: bold;
+          padding: 1.5%;
+        }
+
+        .welcome-card > button:hover {
+          background: #a5b4fc;
+        }
+
         .welcome-card > #skipButton {
           position: absolute;
           left: 0;
           bottom: 0;
+          color: lightgray;
         }
 
         .welcome-card > #startButton {
           position: absolute;
           right: 0;
           bottom: 0;
+          color: white;
         }
 
         .welcome-card > h1,
