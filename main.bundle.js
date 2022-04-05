@@ -252,13 +252,18 @@ exports.FullMirror = FullMirror;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GameGrid = void 0;
 const field_tile_1 = __webpack_require__(311);
-const new_particle_1 = __webpack_require__(187);
+const interference_particle_1 = __webpack_require__(65);
+const normal_particle_1 = __webpack_require__(963);
+const particle_1 = __webpack_require__(893);
+const quantum_particle_1 = __webpack_require__(140);
 const start_block_1 = __webpack_require__(461);
 class GameGrid {
     constructor() {
         this.gridSize = 10;
         //TODO: maybe anders, maybe auch einfach nicht
         this.is_drag = false;
+        this.checkInterference = false;
+        this.potentialInterferenceXY = [];
         //adds the direction to the index_array
         this.idxCalc = (arr, dir) => arr.map((num, idx) => num + dir[idx]);
         //checks if the index_array has indexes that are out of bounds
@@ -286,20 +291,34 @@ class GameGrid {
         p.pop();
     }
     //particle handling
-    addParticle(p) {
+    addParticle(p, particleType, interferenceParams) {
         if (!this.start) {
             return;
         }
         const [x, y] = field_tile_1.FieldTile.calc_middle_of_tile(p, this.startX, this.startY, this.gridSize);
-        this.particles.push(new new_particle_1.NewParticle(x, y, this.start.direction));
+        switch (particleType) {
+            case particle_1.ParticleTypes.Quantum:
+                this.particles.push(new quantum_particle_1.QuantumParticle(x, y, this.start.direction));
+                break;
+            case particle_1.ParticleTypes.Normal:
+                this.particles.push(new normal_particle_1.NormalParticle(x, y, this.start.direction));
+                break;
+            case particle_1.ParticleTypes.Interference:
+                this.particles.push(new interference_particle_1.InterferenceParticle(interferenceParams.x, interferenceParams.y, interferenceParams.dir, interferenceParams.destructive, interferenceParams.phase));
+                break;
+        }
+    }
+    removeParticle(particle) {
+        //remove particle
+        let idx = this.particles.indexOf(particle);
+        this.particles.splice(idx, 1);
     }
     drawParticles(p) {
         this.particles.forEach((particle) => {
             particle.move();
             if (particle.checkOutOfBounds(p)) {
                 //remove particle
-                let idx = this.particles.indexOf(particle);
-                this.particles.splice(idx, 1);
+                this.removeParticle(particle);
             }
             else {
                 //draw particle
@@ -307,6 +326,10 @@ class GameGrid {
                 this.checkParticleCollision(p, particle);
             }
         });
+        //check if there will be new interference particles
+        if (this.potentialInterferenceXY.length > 0) {
+            this.checkNewInterference(p);
+        }
     }
     checkParticleCollision(p, particle) {
         const [x, y] = particle.getXY();
@@ -320,7 +343,7 @@ class GameGrid {
         if (this.grid[y_idx][x_idx].check_object()) {
             const [obj_x, obj_y] = field_tile_1.FieldTile.calc_middle_of_tile(p, x_idx, y_idx, this.gridSize);
             if (obj_x == x && obj_y == y) {
-                //TODO: refactor this later
+                //TODO: refactor this later, naaaaaaaah its fine
                 let new_dirs = this.grid[y_idx][x_idx].get_directions(particle.getDirection());
                 if (new_dirs.length == 0) {
                     //end_point
@@ -331,24 +354,60 @@ class GameGrid {
                 else if (new_dirs.length == 1) {
                     //full mirror
                     particle.setDirection(new_dirs.pop());
-                    particle.shiftPhase();
+                    if (particle instanceof quantum_particle_1.QuantumParticle) {
+                        particle.shiftPhase();
+                    }
                 }
                 else if (new_dirs.length == 2) {
                     //half mirror
-                    particle.setSuperposition(true); // goes straight ahead
                     const mirror = this.grid[y_idx][x_idx].get_object();
-                    const shift_phase = mirror.checkPhaseShift(particle.getDirection());
-                    const new_particle = new new_particle_1.NewParticle(x, y, new_dirs.pop()); //gets mirrored
-                    new_particle.setSuperposition(true);
-                    new_particle.setPhase(shift_phase ? !particle.getPhase() : particle.getPhase());
-                    this.particles.push(new_particle);
+                    if (particle instanceof quantum_particle_1.QuantumParticle) {
+                        particle.setSuperposition(true); // goes straight ahead
+                        const shift_phase = mirror.checkPhaseShift(particle.getDirection());
+                        const new_particle = new quantum_particle_1.QuantumParticle(x, y, new_dirs.pop()); //gets mirrored
+                        new_particle.setSuperposition(true);
+                        new_particle.setPhase(shift_phase ? !particle.getPhase() : particle.getPhase());
+                        this.particles.push(new_particle);
+                        this.potentialInterferenceXY.push(new_particle);
+                    }
+                    else if (particle instanceof normal_particle_1.NormalParticle) {
+                        particle.setDirection(mirror.getNormalDirection(particle.getDirection()));
+                    }
                 }
             }
         }
     }
+    checkNewInterference(p) {
+        const umkreis = 3; // to check if particle is within 3 pixels
+        this.potentialInterferenceXY.forEach((testee) => {
+            const [x, y] = testee.getXY();
+            const interfered = this.particles.find((particle) => {
+                const [particleX, particleY] = particle.getXY();
+                return (testee != particle &&
+                    particleX <= x + umkreis &&
+                    particleX >= x - umkreis &&
+                    particleY <= y + umkreis &&
+                    particleY >= y - umkreis &&
+                    particle.getDirection() === testee.getDirection());
+            });
+            if (interfered) {
+                //add interferenceParticle
+                this.addParticle(p, particle_1.ParticleTypes.Interference, {
+                    x,
+                    y,
+                    dir: testee.getDirection(),
+                    destructive: testee.getPhase() != interfered.getPhase(),
+                    phase: testee.getPhase(),
+                });
+                //removing the particles causes issues, so dont draw them instead, until they are removed automatically
+                testee.dontDraw();
+                interfered.dontDraw();
+            }
+        });
+        this.potentialInterferenceXY = [];
+    }
     //handling of clicking and dragging in the grid
     grid_clicked(p, trigger_popup) {
-        console.log("grid clicked");
         if (!this.checkMousePosition(p)) {
             return;
         }
@@ -487,6 +546,7 @@ class GameGrid {
     clearGrid() {
         this.start = null;
         this.particles = [];
+        this.checkInterference = false;
         this.grid = [];
         for (let index = 0; index < this.gridSize; index++) {
             let temp_row = [];
@@ -495,6 +555,10 @@ class GameGrid {
             }
             this.grid.push(temp_row);
         }
+    }
+    clearParticles() {
+        this.particles = [];
+        this.checkInterference = false;
     }
 }
 exports.GameGrid = GameGrid;
@@ -661,6 +725,13 @@ const mirror_1 = __webpack_require__(899);
 class HalfMirror extends mirror_1.Mirror {
     constructor(dir = game_object_1.Direction.Right) {
         super(0, 0, 255, dir);
+        //for normal particle, that only gets sent in one direction
+        this.normalDir = {
+            up: true,
+            left: true,
+            right: true,
+            down: true,
+        };
     }
     getDirections(entry_dir) {
         if (this.direction == game_object_1.Direction.Right || this.direction == game_object_1.Direction.Left) {
@@ -685,6 +756,40 @@ class HalfMirror extends mirror_1.Mirror {
                     return [entry_dir, game_object_1.Direction.Right];
                 case game_object_1.Direction.Right:
                     return [entry_dir, game_object_1.Direction.Down];
+            }
+        }
+    }
+    getNormalDirection(entry_dir) {
+        if (this.direction == game_object_1.Direction.Right || this.direction == game_object_1.Direction.Left) {
+            switch (entry_dir) {
+                case game_object_1.Direction.Up:
+                    this.normalDir.up = !this.normalDir.up;
+                    return this.normalDir.up ? entry_dir : game_object_1.Direction.Right;
+                case game_object_1.Direction.Left:
+                    this.normalDir.left = !this.normalDir.left;
+                    return this.normalDir.left ? entry_dir : game_object_1.Direction.Down;
+                case game_object_1.Direction.Down:
+                    this.normalDir.down = !this.normalDir.down;
+                    return this.normalDir.down ? entry_dir : game_object_1.Direction.Left;
+                case game_object_1.Direction.Right:
+                    this.normalDir.right = !this.normalDir.right;
+                    return this.normalDir.right ? entry_dir : game_object_1.Direction.Up;
+            }
+        }
+        else {
+            switch (entry_dir) {
+                case game_object_1.Direction.Up:
+                    this.normalDir.up = !this.normalDir.up;
+                    return this.normalDir.up ? entry_dir : game_object_1.Direction.Left;
+                case game_object_1.Direction.Left:
+                    this.normalDir.left = !this.normalDir.left;
+                    return this.normalDir.left ? entry_dir : game_object_1.Direction.Up;
+                case game_object_1.Direction.Down:
+                    this.normalDir.down = !this.normalDir.down;
+                    return this.normalDir.down ? entry_dir : game_object_1.Direction.Right;
+                case game_object_1.Direction.Right:
+                    this.normalDir.right = !this.normalDir.right;
+                    return this.normalDir.right ? entry_dir : game_object_1.Direction.Down;
             }
         }
     }
@@ -756,6 +861,144 @@ exports.HalfMirror = HalfMirror;
 
 /***/ }),
 
+/***/ 65:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.InterferenceParticle = void 0;
+const game_object_1 = __webpack_require__(357);
+const particle_1 = __webpack_require__(893);
+class InterferenceParticle extends particle_1.Particle {
+    constructor(x, y, dir = game_object_1.Direction.Right, destructive, phase) {
+        super();
+        this.size = 30;
+        this.phase_shifted = false;
+        this.superposition = true;
+        this.spin = 0;
+        this.maxSteps = 200;
+        this.stepCounter = 0;
+        this.x = x;
+        this.y = y;
+        this.direction = dir;
+        this.destructive = destructive;
+        this.phase_shifted = phase;
+    }
+    draw(p) {
+        if (this.isNoDraw()) {
+            return;
+        }
+        p.push();
+        p.translate(this.x, this.y);
+        p.noFill();
+        p.strokeWeight(2);
+        if (this.destructive) {
+            const x = this.size;
+            const y = this.size;
+            const yScaled = y * 2.5 * (1.01 - this.stepCounter++ / this.maxSteps);
+            p.stroke(0, 0, 255);
+            p.bezier(-x, 0, 0, -yScaled, 0, yScaled, x, 0);
+            p.stroke(255, 0, 0);
+            p.bezier(-x, 0, 0, yScaled, 0, -yScaled, x, 0);
+            //superposition ring
+            this.spin += 360 / 60;
+            p.stroke(255, 0, 0);
+            p.arc(0, 0, this.size * 2, this.size * 2, 0 + this.spin, 90 + this.spin);
+            p.arc(0, 0, x * 2, y * 2, 180 + this.spin, 270 + this.spin);
+            p.stroke(0, 0, 255);
+            p.arc(0, 0, x * 2, y * 2, 90 + this.spin, 180 + this.spin);
+            p.arc(0, 0, x * 2, y * 2, 270 + this.spin, 0 + this.spin);
+            if (this.spin >= 360) {
+                this.spin = 0;
+            }
+        }
+        else {
+            const x = this.size;
+            const y = this.phase_shifted ? this.size : -this.size;
+            const scale = this.stepCounter >= this.maxSteps
+                ? 1
+                : this.stepCounter++ / this.maxSteps;
+            if (this.phase_shifted) {
+                p.stroke(0, 0, 255);
+            }
+            else {
+                p.stroke(255, 0, 0);
+            }
+            p.bezier(-x, 0, 0, y * -2 * scale, 0, y * 2 * scale, x, 0);
+            if (this.superposition) {
+                const colorScale = 255 * scale;
+                this.spin += 360 / 60;
+                p.stroke(255, colorScale, 0);
+                p.arc(0, 0, this.size * 2, this.size * 2, 0 + this.spin, 90 + this.spin);
+                p.arc(0, 0, x * 2, y * 2, 180 + this.spin, 270 + this.spin);
+                p.stroke(colorScale, colorScale, 255 - colorScale);
+                p.arc(0, 0, x * 2, y * 2, 90 + this.spin, 180 + this.spin);
+                p.arc(0, 0, x * 2, y * 2, 270 + this.spin, 0 + this.spin);
+                if (this.spin >= 360) {
+                    this.spin = 0;
+                }
+            }
+            else {
+                p.stroke(255, 255, 0);
+                p.circle(0, 0, this.size * 2);
+            }
+        }
+        p.pop();
+    }
+    move() {
+        switch (this.direction) {
+            case game_object_1.Direction.Up:
+                this.y--;
+                break;
+            case game_object_1.Direction.Left:
+                this.x--;
+                break;
+            case game_object_1.Direction.Down:
+                this.y++;
+                break;
+            case game_object_1.Direction.Right:
+                this.x++;
+                break;
+        }
+    }
+    setSuperposition(bool) {
+        this.superposition = bool;
+    }
+    setPhase(bool) {
+        this.phase_shifted = bool;
+    }
+    getPhase() {
+        return this.phase_shifted;
+    }
+    shiftPhase() {
+        this.phase_shifted = !this.phase_shifted;
+    }
+    //true if out of bounds, false if inside grid
+    checkOutOfBounds(p) {
+        return (this.x < -this.size ||
+            this.x > p.width + this.size ||
+            this.y < -this.size ||
+            this.y > p.height + this.size);
+    }
+    setDirection(dir) {
+        this.direction = dir;
+    }
+    getDirection() {
+        return this.direction;
+    }
+    getXY() {
+        return [this.x, this.y];
+    }
+    isNoDraw() {
+        return this.destructive && this.stepCounter >= this.maxSteps;
+    }
+}
+exports.InterferenceParticle = InterferenceParticle;
+
+
+/***/ }),
+
 /***/ 899:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
@@ -787,25 +1030,118 @@ exports.Mirror = Mirror;
 
 /***/ }),
 
-/***/ 187:
+/***/ 963:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.NewParticle = void 0;
+exports.NormalParticle = void 0;
 const game_object_1 = __webpack_require__(357);
-class NewParticle {
+const particle_1 = __webpack_require__(893);
+class NormalParticle extends particle_1.Particle {
     constructor(x, y, dir = game_object_1.Direction.Right) {
+        super();
         this.size = 30;
-        this.phase_shifted = false;
-        this.superposition = false;
-        this.spin = 0;
         this.x = x;
         this.y = y;
         this.direction = dir;
     }
     draw(p) {
+        p.push();
+        p.translate(this.x, this.y);
+        p.noFill();
+        p.strokeWeight(2);
+        p.stroke(255, 255, 0);
+        p.circle(0, 0, this.size * 2);
+        p.pop();
+    }
+    move() {
+        switch (this.direction) {
+            case game_object_1.Direction.Up:
+                this.y--;
+                break;
+            case game_object_1.Direction.Left:
+                this.x--;
+                break;
+            case game_object_1.Direction.Down:
+                this.y++;
+                break;
+            case game_object_1.Direction.Right:
+                this.x++;
+                break;
+        }
+    }
+    //true if out of bounds, false if inside grid
+    checkOutOfBounds(p) {
+        return (this.x < -this.size ||
+            this.x > p.width + this.size ||
+            this.y < -this.size ||
+            this.y > p.height + this.size);
+    }
+    setDirection(dir) {
+        this.direction = dir;
+    }
+    getDirection() {
+        return this.direction;
+    }
+    getXY() {
+        return [this.x, this.y];
+    }
+    isNoDraw() {
+        return false;
+    }
+}
+exports.NormalParticle = NormalParticle;
+
+
+/***/ }),
+
+/***/ 893:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Particle = exports.ParticleTypes = void 0;
+var ParticleTypes;
+(function (ParticleTypes) {
+    ParticleTypes[ParticleTypes["Quantum"] = 0] = "Quantum";
+    ParticleTypes[ParticleTypes["Normal"] = 1] = "Normal";
+    ParticleTypes[ParticleTypes["Interference"] = 2] = "Interference";
+})(ParticleTypes = exports.ParticleTypes || (exports.ParticleTypes = {}));
+class Particle {
+}
+exports.Particle = Particle;
+
+
+/***/ }),
+
+/***/ 140:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.QuantumParticle = void 0;
+const game_object_1 = __webpack_require__(357);
+const particle_1 = __webpack_require__(893);
+class QuantumParticle extends particle_1.Particle {
+    constructor(x, y, dir = game_object_1.Direction.Right) {
+        super();
+        this.size = 30;
+        this.phase_shifted = false;
+        this.superposition = false;
+        this.spin = 0;
+        this.noDraw = false;
+        this.x = x;
+        this.y = y;
+        this.direction = dir;
+    }
+    draw(p) {
+        if (this.noDraw) {
+            return;
+        }
         p.push();
         p.translate(this.x, this.y);
         p.noFill();
@@ -865,9 +1201,6 @@ class NewParticle {
     shiftPhase() {
         this.phase_shifted = !this.phase_shifted;
     }
-    checkFlipped() {
-        return this.phase_shifted;
-    }
     //true if out of bounds, false if inside grid
     checkOutOfBounds(p) {
         return (this.x < -this.size ||
@@ -884,8 +1217,14 @@ class NewParticle {
     getXY() {
         return [this.x, this.y];
     }
+    dontDraw() {
+        this.noDraw = true;
+    }
+    isNoDraw() {
+        return this.noDraw;
+    }
 }
-exports.NewParticle = NewParticle;
+exports.QuantumParticle = QuantumParticle;
 
 
 /***/ }),
@@ -964,6 +1303,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SpiegelDemo = void 0;
 const game_grid_1 = __webpack_require__(580);
 const game_object_popup_1 = __webpack_require__(404);
+const particle_1 = __webpack_require__(893);
 const tutorial_1 = __webpack_require__(884);
 const welcomescreen_1 = __webpack_require__(102);
 class SpiegelDemo {
@@ -977,6 +1317,7 @@ class SpiegelDemo {
             let particleCounter = 0;
             let levelSelect; // doesnt work with p5.Element
             let playButton;
+            let particleChooser; // doesnt work with p5.Element
             let tutorial;
             let welcome;
             let is_drag = false;
@@ -1066,14 +1407,17 @@ class SpiegelDemo {
                         playButton.html("Play");
                     }
                 });
+                particleChooser = p.createCheckbox("Use Quantum", true);
+                particleChooser.changed(() => gameGrid.clearParticles());
                 fpsSlider.parent("controls");
                 particleSlider.parent("controls");
                 playButton.parent("controls");
+                particleChooser.parent("controls");
                 levelSelect.parent("controls");
-                //load tutorial
+                //load tutorial level
                 levelSelect.selected("Tutorial");
                 loadLevel("tutorial");
-                // p.noLoop();
+                //initialize overlays
                 tutorial = new tutorial_1.Tutorial(canvas, p, gameGrid.gridSize);
                 welcome = new welcomescreen_1.WelcomeScreen(() => {
                     levelSelect.selected("Level 1");
@@ -1083,6 +1427,7 @@ class SpiegelDemo {
                     welcome.remove();
                     tutorial.start();
                 });
+                //start welcome overlay
                 welcome.start();
             };
             p.draw = () => {
@@ -1098,7 +1443,9 @@ class SpiegelDemo {
                 //counter for adding particles
                 particleCounter++;
                 if (particleCounter >= Math.abs(Number(particleSlider.value())) * 60) {
-                    gameGrid.addParticle(p);
+                    gameGrid.addParticle(p, particleChooser.checked()
+                        ? particle_1.ParticleTypes.Quantum
+                        : particle_1.ParticleTypes.Normal);
                     particleCounter = 0;
                 }
             };

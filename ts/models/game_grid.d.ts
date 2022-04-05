@@ -1,5 +1,6 @@
 import p5 from "p5";
-import { GameObject } from "./game_object";
+import { Direction, GameObject } from "./game_object";
+import { Particle, ParticleTypes } from "./particle";
 export declare class GameGrid {
     private grid;
     gridSize: number;
@@ -10,11 +11,21 @@ export declare class GameGrid {
     private dragX;
     private dragY;
     private particles;
+    private checkInterference;
     constructor();
     draw(p: p5): void;
-    addParticle(p: p5): void;
+    addParticle(p: p5, particleType: ParticleTypes, interferenceParams?: {
+        x: number;
+        y: number;
+        dir: Direction;
+        destructive: boolean;
+        phase: boolean;
+    }): void;
+    removeParticle(particle: Particle): void;
     private drawParticles;
     private checkParticleCollision;
+    private potentialInterferenceXY;
+    checkNewInterference(p: p5): void;
     grid_clicked(p: p5, trigger_popup: (x_idx: number, y_idx: number, field_size: number) => void): void;
     grid_drag_start(p: p5): void;
     grid_drag_end(p: p5): void;
@@ -29,4 +40,5 @@ export declare class GameGrid {
     private checkPosition;
     add_game_object(obj: GameObject, x_idx: number, y_idx: number): void;
     clearGrid(): void;
+    clearParticles(): void;
 }
