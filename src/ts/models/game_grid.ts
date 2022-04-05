@@ -1,6 +1,7 @@
 import p5 from "p5";
+import { EndPoint } from "./end_block";
 import { FieldTile } from "./field_tile";
-import { Direction, GameObject } from "./game_object";
+import { BaseObject, Direction, GameObject } from "./game_object";
 import { HalfMirror } from "./half_mirror";
 import { InterferenceParticle } from "./interference_particle";
 import { NormalParticle } from "./normal_particle";
@@ -24,8 +25,10 @@ export class GameGrid {
   private dragY: number;
 
   private particles: Particle[];
+  private potentialInterferenceParticles: QuantumParticle[] = [];
 
-  private checkInterference = false;
+  private endpointCounter = {};
+  private endpointNum = 0;
 
   constructor() {
     //initialize grid
@@ -119,7 +122,7 @@ export class GameGrid {
     });
 
     //check if there will be new interference particles
-    if (this.potentialInterferenceXY.length > 0) {
+    if (this.potentialInterferenceParticles.length > 0) {
       this.checkNewInterference(p);
     }
   }
@@ -149,9 +152,12 @@ export class GameGrid {
         );
         if (new_dirs.length == 0) {
           //end_point
-          //remove particle
-          let idx = this.particles.indexOf(particle);
-          this.particles.splice(idx, 1);
+          const obj = this.grid[y_idx][x_idx].get_object();
+          if(obj instanceof EndPoint && !particle.isNoDraw()){
+            obj.addToCounter();
+          }
+
+          this.removeParticle(particle);
         } else if (new_dirs.length == 1) {
           //full mirror
           particle.setDirection(new_dirs.pop());
@@ -175,7 +181,7 @@ export class GameGrid {
             );
 
             this.particles.push(new_particle);
-            this.potentialInterferenceXY.push(new_particle);
+            this.potentialInterferenceParticles.push(new_particle);
           } else if (particle instanceof NormalParticle) {
             particle.setDirection(
               mirror.getNormalDirection(particle.getDirection())
@@ -186,11 +192,10 @@ export class GameGrid {
     }
   }
 
-  private potentialInterferenceXY: QuantumParticle[] = [];
   checkNewInterference(p: p5) {
     const umkreis = 3; // to check if particle is within 3 pixels
 
-    this.potentialInterferenceXY.forEach((testee) => {
+    this.potentialInterferenceParticles.forEach((testee) => {
       const [x, y] = testee.getXY();
       const interfered = this.particles.find((particle) => {
         const [particleX, particleY] = particle.getXY();
@@ -221,7 +226,7 @@ export class GameGrid {
       }
     });
 
-    this.potentialInterferenceXY = [];
+    this.potentialInterferenceParticles = [];
   }
 
   //handling of clicking and dragging in the grid
@@ -307,11 +312,15 @@ export class GameGrid {
     }
 
     //swap dragged object with target object
-    const tmp = this.grid[this.dragY][this.dragX].get_object();
-    this.grid[this.dragY][this.dragX].change_object(
-      this.grid[end_y][end_x].get_object()
+    const tmp = this.grid[end_y][end_x].get_object();
+    if(!(tmp instanceof BaseObject)){
+      return;
+    }    
+
+    this.grid[end_y][end_x].change_object(
+      this.grid[this.dragY][this.dragX].get_object()
     );
-    this.grid[end_y][end_x].change_object(tmp);
+    this.grid[this.dragY][this.dragX].change_object(tmp);
 
     if (tmp instanceof StartPoint) {
       this.startX = end_x;
@@ -420,12 +429,16 @@ export class GameGrid {
       this.startX = x_idx;
       this.startY = y_idx;
     }
+
+    if(obj instanceof EndPoint){
+      obj.setCounter(this.endpointCounter, this.endpointNum++);
+    }
   }
 
   clearGrid() {
     this.start = null;
-    this.particles = [];
-    this.checkInterference = false;
+    this.clearParticles();
+    this.endpointNum = 0;
     this.grid = [];
     for (let index = 0; index < this.gridSize; index++) {
       let temp_row: FieldTile[] = [];
@@ -438,6 +451,7 @@ export class GameGrid {
 
   clearParticles() {
     this.particles = [];
-    this.checkInterference = false;
+    this.potentialInterferenceParticles = [];
+    this.endpointCounter = {};
   }
 }
