@@ -134,10 +134,10 @@ export class HalfMirror extends Mirror {
     p.rotate(getRotation(this.direction) - 45);
     p.stroke(255);
     p.fill(this.r, this.g, this.b);
-    p.rect(0, 0, this.width, this.height);
+    p.rect(0, 0, this.width * this.scale, this.height * this.scale);
 
     p.fill(255);
-    p.rect(0, 3, this.width, 3);
+    p.rect(0, 3, this.width * this.scale, 3 * this.scale);
 
     p.pop();
   }

@@ -15,24 +15,27 @@ export class EndPoint extends GameObject {
 
     p.fill(0, 255, 0);
     p.stroke(255);
-    p.strokeWeight(4);
+    p.strokeWeight(4 * this.scale);
 
     p.rotate(getRotation(this.direction));
 
+    const valOne = 15 * this.scale;
+    const valTwo = 30 * this.scale;
+
     p.beginShape();
-    p.vertex(-15, -30);
-    p.vertex(15, -30);
-    p.vertex(15, 30);
-    p.vertex(-15, 30);
+    p.vertex(-valOne, -valTwo);
+    p.vertex(valOne, -valTwo);
+    p.vertex(valOne, valTwo);
+    p.vertex(-valOne, valTwo);
     p.endShape();
 
-    p.arc(-15, 0, 45, 60, 90, 270);
+    p.arc(-valOne, 0, 45 * this.scale, 60 * this.scale, 90, 270);
 
     //percentage ring
-    p.strokeWeight(6);
+    p.strokeWeight(6 * this.scale);
     p.noFill();
     p.stroke(255);
-    p.arc(0, 0, 100, 100, 0, 360 * this.percentage);
+    p.arc(0, 0, 100 * this.scale, 100 * this.scale, 0, 360 * this.percentage);
 
     p.pop();
 

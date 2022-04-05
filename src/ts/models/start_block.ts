@@ -11,17 +11,20 @@ export class StartPoint extends GameObject {
 
     p.fill(255, 255, 0);
     p.stroke(255);
-    p.strokeWeight(4);
+    p.strokeWeight(4 * this.scale);
 
     p.rotate(getRotation(this.direction));
 
+    const valOne = 15 * this.scale;
+    const valTwo = 30 * this.scale;
+
     p.beginShape();
-    p.vertex(-15, -30);
-    p.vertex(15, -30);
-    p.vertex(30, 0);
-    p.vertex(15, 30);
-    p.vertex(-15, 30);
-    p.vertex(-15, -30);
+    p.vertex(-valOne, -valTwo);
+    p.vertex(valOne, -valTwo);
+    p.vertex(valTwo, 0);
+    p.vertex(valOne, valTwo);
+    p.vertex(-valOne, valTwo);
+    p.vertex(-valOne, -valTwo);
     p.endShape();
 
     p.pop();

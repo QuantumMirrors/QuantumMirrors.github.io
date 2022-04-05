@@ -8,10 +8,6 @@ export class QuantumParticle extends Particle {
   private superposition = false;
   private spin = 0;
 
-  private x: number;
-  private y: number;
-  private direction: Direction;
-
   private noDraw = false;
 
   constructor(x: number, y: number, dir: Direction = Direction.Right) {
@@ -33,8 +29,8 @@ export class QuantumParticle extends Particle {
     p.noFill();
     p.strokeWeight(2);
 
-    const x = this.size;
-    const y = this.phase_shifted ? this.size : -this.size;
+    const x = this.size * this.scale;
+    const y = this.phase_shifted ? this.size * this.scale : -this.size * this.scale;
 
     if (this.phase_shifted) {
       p.stroke(0, 0, 255);
@@ -47,7 +43,7 @@ export class QuantumParticle extends Particle {
     if (this.superposition) {
       this.spin += 360 / 60;
       p.stroke(255, 0, 0);
-      p.arc(0, 0, this.size * 2, this.size * 2, 0 + this.spin, 90 + this.spin);
+      p.arc(0, 0, this.size * 2 * this.scale, this.size * 2 * this.scale, 0 + this.spin, 90 + this.spin);
       p.arc(0, 0, x * 2, y * 2, 180 + this.spin, 270 + this.spin);
       p.stroke(0, 0, 255);
       p.arc(0, 0, x * 2, y * 2, 90 + this.spin, 180 + this.spin);
@@ -57,27 +53,10 @@ export class QuantumParticle extends Particle {
       }
     } else {
       p.stroke(255, 255, 0);
-      p.circle(0, 0, this.size * 2);
+      p.circle(0, 0, this.size * 2 * this.scale);
     }
 
     p.pop();
-  }
-
-  move() {
-    switch (this.direction) {
-      case Direction.Up:
-        this.y--;
-        break;
-      case Direction.Left:
-        this.x--;
-        break;
-      case Direction.Down:
-        this.y++;
-        break;
-      case Direction.Right:
-        this.x++;
-        break;
-    }
   }
 
   setSuperposition(bool: boolean) {

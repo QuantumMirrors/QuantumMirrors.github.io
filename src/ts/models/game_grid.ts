@@ -30,6 +30,8 @@ export class GameGrid {
   private endpointCounter = {};
   private endpointNum = 0;
 
+  private currentScale = 1;
+
   constructor() {
     //initialize grid
     this.clearGrid();
@@ -81,25 +83,27 @@ export class GameGrid {
       this.gridSize
     );
 
+    let particle: Particle;
     switch (particleType) {
       case ParticleTypes.Quantum:
-        this.particles.push(new QuantumParticle(x, y, this.start.direction));
+        particle = new QuantumParticle(x, y, this.start.direction);
         break;
       case ParticleTypes.Normal:
-        this.particles.push(new NormalParticle(x, y, this.start.direction));
+        particle = new NormalParticle(x, y, this.start.direction);
         break;
       case ParticleTypes.Interference:
-        this.particles.push(
-          new InterferenceParticle(
-            interferenceParams.x,
-            interferenceParams.y,
-            interferenceParams.dir,
-            interferenceParams.destructive,
-            interferenceParams.phase
-          )
+        particle = new InterferenceParticle(
+          interferenceParams.x,
+          interferenceParams.y,
+          interferenceParams.dir,
+          interferenceParams.destructive,
+          interferenceParams.phase
         );
         break;
     }
+
+    particle.setScale(this.currentScale);
+    this.particles.push(particle);
   }
 
   removeParticle(particle: Particle) {
@@ -145,6 +149,7 @@ export class GameGrid {
         y_idx,
         this.gridSize
       );
+
       if (obj_x == x && obj_y == y) {
         //TODO: refactor this later, naaaaaaaah its fine
         let new_dirs = this.grid[y_idx][x_idx].get_directions(
@@ -153,7 +158,7 @@ export class GameGrid {
         if (new_dirs.length == 0) {
           //end_point
           const obj = this.grid[y_idx][x_idx].get_object();
-          if(obj instanceof EndPoint && !particle.isNoDraw()){
+          if (obj instanceof EndPoint && !particle.isNoDraw()) {
             obj.addToCounter();
           }
 
@@ -179,6 +184,7 @@ export class GameGrid {
             new_particle.setPhase(
               shift_phase ? !particle.getPhase() : particle.getPhase()
             );
+            new_particle.setScale(this.currentScale);
 
             this.particles.push(new_particle);
             this.potentialInterferenceParticles.push(new_particle);
@@ -313,9 +319,9 @@ export class GameGrid {
 
     //swap dragged object with target object
     const tmp = this.grid[end_y][end_x].get_object();
-    if(!(tmp instanceof BaseObject)){
+    if (!(tmp instanceof BaseObject)) {
       return;
-    }    
+    }
 
     this.grid[end_y][end_x].change_object(
       this.grid[this.dragY][this.dragX].get_object()
@@ -430,9 +436,23 @@ export class GameGrid {
       this.startY = y_idx;
     }
 
-    if(obj instanceof EndPoint){
+    if (obj instanceof EndPoint) {
       obj.setCounter(this.endpointCounter, this.endpointNum++);
     }
+
+    obj.setScale(this.currentScale);
+  }
+
+  setNewScale(scale: number) {
+    this.currentScale = scale;
+
+    for (let index = 0; index < this.gridSize; index++) {
+      for (let j = 0; j < this.gridSize; j++) {
+        this.grid[j][index].get_object().setScale(scale);
+      }
+    }
+
+    this.particles.forEach((particle) => particle.setScale(scale));
   }
 
   clearGrid() {

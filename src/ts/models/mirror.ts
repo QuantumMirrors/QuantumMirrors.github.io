@@ -22,8 +22,9 @@ export abstract class Mirror extends GameObject {
     p.rotate(getRotation(this.direction) - 45);
     p.stroke(255);
     p.fill(this.r, this.g, this.b);
-    p.rect(0, 0, this.width, this.height);
+    p.rect(0, 0, this.width * this.scale, this.height * this.scale);
 
     p.pop();
   }
+
 }

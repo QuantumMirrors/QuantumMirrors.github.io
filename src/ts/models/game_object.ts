@@ -24,12 +24,16 @@ export function getRotation(dir: Direction): number {
 
 export abstract class GameObject {
   direction: Direction;
+  scale = 1;
   constructor(dir: Direction) {
     this.direction = dir;
   }
 
   abstract draw(p: p5): void;
   abstract getDirections(entry_dir: Direction): Direction[];
+  setScale(scale: number){
+    this.scale = scale;
+  }
 
   rotateRight() {
     switch (this.direction) {

@@ -76,6 +76,7 @@ export class SpiegelDemo {
         const width = p.windowWidth;
         const size = height >= width ? width : height;
         p.resizeCanvas(size, size);
+        gameGrid.setNewScale(size/1000);
       };
       p.windowResized();
 
