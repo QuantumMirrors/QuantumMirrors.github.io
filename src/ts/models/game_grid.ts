@@ -2,7 +2,10 @@ import p5 from "p5";
 import { FieldTile } from "./field_tile";
 import { Direction, GameObject } from "./game_object";
 import { HalfMirror } from "./half_mirror";
-import { NewParticle } from "./new_particle";
+import { InterferenceParticle } from "./interference_particle";
+import { NormalParticle } from "./normal_particle";
+import { Particle, ParticleTypes } from "./particle";
+import { QuantumParticle } from "./quantum_particle";
 import { StartPoint } from "./start_block";
 
 export class GameGrid {
@@ -20,7 +23,9 @@ export class GameGrid {
   private dragX: number;
   private dragY: number;
 
-  private particles: NewParticle[];
+  private particles: Particle[];
+
+  private checkInterference = false;
 
   constructor() {
     //initialize grid
@@ -51,7 +56,17 @@ export class GameGrid {
   }
 
   //particle handling
-  addParticle(p: p5) {
+  addParticle(
+    p: p5,
+    particleType: ParticleTypes,
+    interferenceParams?: {
+      x: number;
+      y: number;
+      dir: Direction;
+      destructive: boolean;
+      phase: boolean;
+    }
+  ) {
     if (!this.start) {
       return;
     }
@@ -62,7 +77,32 @@ export class GameGrid {
       this.startY,
       this.gridSize
     );
-    this.particles.push(new NewParticle(x, y, this.start.direction));
+
+    switch (particleType) {
+      case ParticleTypes.Quantum:
+        this.particles.push(new QuantumParticle(x, y, this.start.direction));
+        break;
+      case ParticleTypes.Normal:
+        this.particles.push(new NormalParticle(x, y, this.start.direction));
+        break;
+      case ParticleTypes.Interference:
+        this.particles.push(
+          new InterferenceParticle(
+            interferenceParams.x,
+            interferenceParams.y,
+            interferenceParams.dir,
+            interferenceParams.destructive,
+            interferenceParams.phase
+          )
+        );
+        break;
+    }
+  }
+
+  removeParticle(particle: Particle) {
+    //remove particle
+    let idx = this.particles.indexOf(particle);
+    this.particles.splice(idx, 1);
   }
 
   private drawParticles(p: p5) {
@@ -70,17 +110,21 @@ export class GameGrid {
       particle.move();
       if (particle.checkOutOfBounds(p)) {
         //remove particle
-        let idx = this.particles.indexOf(particle);
-        this.particles.splice(idx, 1);
+        this.removeParticle(particle);
       } else {
         //draw particle
         particle.draw(p);
         this.checkParticleCollision(p, particle);
       }
     });
+
+    //check if there will be new interference particles
+    if (this.potentialInterferenceXY.length > 0) {
+      this.checkNewInterference(p);
+    }
   }
 
-  private checkParticleCollision(p: p5, particle: NewParticle) {
+  private checkParticleCollision(p: p5, particle: Particle) {
     const [x, y] = particle.getXY();
     if (!this.checkPosition(p, x, y)) {
       return;
@@ -99,7 +143,7 @@ export class GameGrid {
         this.gridSize
       );
       if (obj_x == x && obj_y == y) {
-        //TODO: refactor this later
+        //TODO: refactor this later, naaaaaaaah its fine
         let new_dirs = this.grid[y_idx][x_idx].get_directions(
           particle.getDirection()
         );
@@ -111,24 +155,73 @@ export class GameGrid {
         } else if (new_dirs.length == 1) {
           //full mirror
           particle.setDirection(new_dirs.pop());
-          particle.shiftPhase();
+
+          if (particle instanceof QuantumParticle) {
+            particle.shiftPhase();
+          }
         } else if (new_dirs.length == 2) {
           //half mirror
-          particle.setSuperposition(true); // goes straight ahead
-
           const mirror = this.grid[y_idx][x_idx].get_object() as HalfMirror;
-          const shift_phase = mirror.checkPhaseShift(particle.getDirection());
 
-          const new_particle = new NewParticle(x, y, new_dirs.pop()); //gets mirrored
-          new_particle.setSuperposition(true);
-          new_particle.setPhase(
-            shift_phase ? !particle.getPhase() : particle.getPhase()
-          );
+          if (particle instanceof QuantumParticle) {
+            particle.setSuperposition(true); // goes straight ahead
 
-          this.particles.push(new_particle);
+            const shift_phase = mirror.checkPhaseShift(particle.getDirection());
+
+            const new_particle = new QuantumParticle(x, y, new_dirs.pop()); //gets mirrored
+            new_particle.setSuperposition(true);
+            new_particle.setPhase(
+              shift_phase ? !particle.getPhase() : particle.getPhase()
+            );
+
+            this.particles.push(new_particle);
+            this.potentialInterferenceXY.push(new_particle);
+          } else if (particle instanceof NormalParticle) {
+            particle.setDirection(
+              mirror.getNormalDirection(particle.getDirection())
+            );
+          }
         }
       }
     }
+  }
+
+  private potentialInterferenceXY: QuantumParticle[] = [];
+  checkNewInterference(p: p5) {
+    const umkreis = 3; // to check if particle is within 3 pixels
+
+    this.potentialInterferenceXY.forEach((testee) => {
+      const [x, y] = testee.getXY();
+      const interfered = this.particles.find((particle) => {
+        const [particleX, particleY] = particle.getXY();
+
+        return (
+          testee != particle &&
+          particleX <= x + umkreis &&
+          particleX >= x - umkreis &&
+          particleY <= y + umkreis &&
+          particleY >= y - umkreis &&
+          particle.getDirection() === testee.getDirection()
+        );
+      }) as QuantumParticle;
+
+      if (interfered) {
+        //add interferenceParticle
+        this.addParticle(p, ParticleTypes.Interference, {
+          x,
+          y,
+          dir: testee.getDirection(),
+          destructive: testee.getPhase() != interfered.getPhase(),
+          phase: testee.getPhase(),
+        });
+
+        //removing the particles causes issues, so dont draw them instead, until they are removed automatically
+        testee.dontDraw();
+        interfered.dontDraw();
+      }
+    });
+
+    this.potentialInterferenceXY = [];
   }
 
   //handling of clicking and dragging in the grid
@@ -136,8 +229,6 @@ export class GameGrid {
     p: p5,
     trigger_popup: (x_idx: number, y_idx: number, field_size: number) => void
   ) {
-    console.log("grid clicked");
-    
     if (!this.checkMousePosition(p)) {
       return;
     }
@@ -253,7 +344,9 @@ export class GameGrid {
         this.draw_beam(startpoint[0], startpoint[1], idx_arr[0], idx_arr[1], p);
 
         //causes the loop/game to crash, when not filtered out
-        if(this.grid[idx_arr[1]][idx_arr[0]].get_object() instanceof StartPoint){
+        if (
+          this.grid[idx_arr[1]][idx_arr[0]].get_object() instanceof StartPoint
+        ) {
           break;
         }
 
@@ -332,6 +425,7 @@ export class GameGrid {
   clearGrid() {
     this.start = null;
     this.particles = [];
+    this.checkInterference = false;
     this.grid = [];
     for (let index = 0; index < this.gridSize; index++) {
       let temp_row: FieldTile[] = [];
@@ -340,5 +434,10 @@ export class GameGrid {
       }
       this.grid.push(temp_row);
     }
+  }
+
+  clearParticles() {
+    this.particles = [];
+    this.checkInterference = false;
   }
 }

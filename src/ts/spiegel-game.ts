@@ -2,6 +2,7 @@ import p5 from "p5";
 import { GameGrid } from "./models/game_grid";
 import { GameObject } from "./models/game_object";
 import { GameObjectPopup } from "./models/game_object_popup";
+import { ParticleTypes } from "./models/particle";
 import { Tutorial } from "./tutorial";
 import { WelcomeScreen } from "./welcomescreen";
 
@@ -17,6 +18,7 @@ export class SpiegelDemo {
     let particleCounter = 0;
     let levelSelect: any; // doesnt work with p5.Element
     let playButton: p5.Element;
+    let particleChooser: any; // doesnt work with p5.Element
 
     let tutorial: Tutorial;
     let welcome: WelcomeScreen;
@@ -31,7 +33,7 @@ export class SpiegelDemo {
       canvas.mousePressed(() => {
         // console.log("press");
         setTimeout(() => {
-          if(p.mouseIsPressed){
+          if (p.mouseIsPressed) {
             is_drag = true;
             gameGrid.grid_drag_start(p);
           }
@@ -41,16 +43,16 @@ export class SpiegelDemo {
       canvas.touchStarted(() => {
         // console.log("touch");
         setTimeout(() => {
-          if(p.mouseIsPressed){
+          if (p.mouseIsPressed) {
             is_drag = true;
             gameGrid.grid_drag_start(p);
           }
         }, 250);
-      })
+      });
 
       canvas.mouseReleased(() => {
         // console.log("release");
-        if(is_drag){
+        if (is_drag) {
           gameGrid.grid_drag_end(p);
           is_drag = false;
         } else {
@@ -58,17 +60,15 @@ export class SpiegelDemo {
             gameObjectPopup.show(x, y, field_size);
           });
         }
-      })
+      });
 
       canvas.touchEnded(() => {
         // console.log("touchend");
-        if(is_drag){
+        if (is_drag) {
           gameGrid.grid_drag_end(p);
           is_drag = false;
         }
-      })
-
-
+      });
 
       p.windowResized = () => {
         const canvasPos = canvas.position() as { x: number; y: number };
@@ -118,17 +118,20 @@ export class SpiegelDemo {
         }
       });
 
+      particleChooser = p.createCheckbox("Use Quantum", true);
+      particleChooser.changed(() => gameGrid.clearParticles());
+
       fpsSlider.parent("controls");
       particleSlider.parent("controls");
       playButton.parent("controls");
+      particleChooser.parent("controls");
       levelSelect.parent("controls");
 
-      //load tutorial
+      //load tutorial level
       levelSelect.selected("Tutorial");
       loadLevel("tutorial");
 
-      // p.noLoop();
-
+      //initialize overlays
       tutorial = new Tutorial(canvas, p, gameGrid.gridSize);
       welcome = new WelcomeScreen(
         () => {
@@ -142,6 +145,7 @@ export class SpiegelDemo {
         }
       );
 
+      //start welcome overlay
       welcome.start();
     };
 
@@ -162,7 +166,12 @@ export class SpiegelDemo {
       //counter for adding particles
       particleCounter++;
       if (particleCounter >= Math.abs(Number(particleSlider.value())) * 60) {
-        gameGrid.addParticle(p);
+        gameGrid.addParticle(
+          p,
+          particleChooser.checked()
+            ? ParticleTypes.Quantum
+            : ParticleTypes.Normal
+        );
         particleCounter = 0;
       }
     };
