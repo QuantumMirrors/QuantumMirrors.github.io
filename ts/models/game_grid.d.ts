@@ -11,7 +11,9 @@ export declare class GameGrid {
     private dragX;
     private dragY;
     private particles;
-    private checkInterference;
+    private potentialInterferenceParticles;
+    private endpointCounter;
+    private endpointNum;
     constructor();
     draw(p: p5): void;
     addParticle(p: p5, particleType: ParticleTypes, interferenceParams?: {
@@ -24,7 +26,6 @@ export declare class GameGrid {
     removeParticle(particle: Particle): void;
     private drawParticles;
     private checkParticleCollision;
-    private potentialInterferenceXY;
     checkNewInterference(p: p5): void;
     grid_clicked(p: p5, trigger_popup: (x_idx: number, y_idx: number, field_size: number) => void): void;
     grid_drag_start(p: p5): void;

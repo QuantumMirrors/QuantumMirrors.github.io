@@ -107,6 +107,7 @@ const game_object_1 = __webpack_require__(357);
 class EndPoint extends game_object_1.GameObject {
     constructor(dir = game_object_1.Direction.Right) {
         super(dir);
+        this.percentage = 0;
     }
     draw(p) {
         p.push();
@@ -121,7 +122,31 @@ class EndPoint extends game_object_1.GameObject {
         p.vertex(-15, 30);
         p.endShape();
         p.arc(-15, 0, 45, 60, 90, 270);
+        //percentage ring
+        p.strokeWeight(6);
+        p.noFill();
+        p.stroke(255);
+        p.arc(0, 0, 100, 100, 0, 360 * this.percentage);
         p.pop();
+        if (this.counter[this.index]) {
+            this.calcNewPercentage();
+        }
+    }
+    setCounter(counter, index) {
+        this.counter = counter;
+        this.index = index;
+    }
+    addToCounter() {
+        if (this.counter[this.index]) {
+            this.counter[this.index]++;
+        }
+        else {
+            this.counter[this.index] = 1;
+        }
+    }
+    calcNewPercentage() {
+        const sum = Object.values(this.counter).reduce((prev, cur) => prev + cur);
+        this.percentage = this.counter[this.index] / sum;
     }
     getDirections() {
         return [];
@@ -251,7 +276,9 @@ exports.FullMirror = FullMirror;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GameGrid = void 0;
+const end_block_1 = __webpack_require__(221);
 const field_tile_1 = __webpack_require__(311);
+const game_object_1 = __webpack_require__(357);
 const interference_particle_1 = __webpack_require__(65);
 const normal_particle_1 = __webpack_require__(963);
 const particle_1 = __webpack_require__(893);
@@ -262,8 +289,9 @@ class GameGrid {
         this.gridSize = 10;
         //TODO: maybe anders, maybe auch einfach nicht
         this.is_drag = false;
-        this.checkInterference = false;
-        this.potentialInterferenceXY = [];
+        this.potentialInterferenceParticles = [];
+        this.endpointCounter = {};
+        this.endpointNum = 0;
         //adds the direction to the index_array
         this.idxCalc = (arr, dir) => arr.map((num, idx) => num + dir[idx]);
         //checks if the index_array has indexes that are out of bounds
@@ -327,7 +355,7 @@ class GameGrid {
             }
         });
         //check if there will be new interference particles
-        if (this.potentialInterferenceXY.length > 0) {
+        if (this.potentialInterferenceParticles.length > 0) {
             this.checkNewInterference(p);
         }
     }
@@ -347,9 +375,11 @@ class GameGrid {
                 let new_dirs = this.grid[y_idx][x_idx].get_directions(particle.getDirection());
                 if (new_dirs.length == 0) {
                     //end_point
-                    //remove particle
-                    let idx = this.particles.indexOf(particle);
-                    this.particles.splice(idx, 1);
+                    const obj = this.grid[y_idx][x_idx].get_object();
+                    if (obj instanceof end_block_1.EndPoint && !particle.isNoDraw()) {
+                        obj.addToCounter();
+                    }
+                    this.removeParticle(particle);
                 }
                 else if (new_dirs.length == 1) {
                     //full mirror
@@ -368,7 +398,7 @@ class GameGrid {
                         new_particle.setSuperposition(true);
                         new_particle.setPhase(shift_phase ? !particle.getPhase() : particle.getPhase());
                         this.particles.push(new_particle);
-                        this.potentialInterferenceXY.push(new_particle);
+                        this.potentialInterferenceParticles.push(new_particle);
                     }
                     else if (particle instanceof normal_particle_1.NormalParticle) {
                         particle.setDirection(mirror.getNormalDirection(particle.getDirection()));
@@ -379,7 +409,7 @@ class GameGrid {
     }
     checkNewInterference(p) {
         const umkreis = 3; // to check if particle is within 3 pixels
-        this.potentialInterferenceXY.forEach((testee) => {
+        this.potentialInterferenceParticles.forEach((testee) => {
             const [x, y] = testee.getXY();
             const interfered = this.particles.find((particle) => {
                 const [particleX, particleY] = particle.getXY();
@@ -404,7 +434,7 @@ class GameGrid {
                 interfered.dontDraw();
             }
         });
-        this.potentialInterferenceXY = [];
+        this.potentialInterferenceParticles = [];
     }
     //handling of clicking and dragging in the grid
     grid_clicked(p, trigger_popup) {
@@ -471,9 +501,12 @@ class GameGrid {
             return;
         }
         //swap dragged object with target object
-        const tmp = this.grid[this.dragY][this.dragX].get_object();
-        this.grid[this.dragY][this.dragX].change_object(this.grid[end_y][end_x].get_object());
-        this.grid[end_y][end_x].change_object(tmp);
+        const tmp = this.grid[end_y][end_x].get_object();
+        if (!(tmp instanceof game_object_1.BaseObject)) {
+            return;
+        }
+        this.grid[end_y][end_x].change_object(this.grid[this.dragY][this.dragX].get_object());
+        this.grid[this.dragY][this.dragX].change_object(tmp);
         if (tmp instanceof start_block_1.StartPoint) {
             this.startX = end_x;
             this.startY = end_y;
@@ -542,11 +575,14 @@ class GameGrid {
             this.startX = x_idx;
             this.startY = y_idx;
         }
+        if (obj instanceof end_block_1.EndPoint) {
+            obj.setCounter(this.endpointCounter, this.endpointNum++);
+        }
     }
     clearGrid() {
         this.start = null;
-        this.particles = [];
-        this.checkInterference = false;
+        this.clearParticles();
+        this.endpointNum = 0;
         this.grid = [];
         for (let index = 0; index < this.gridSize; index++) {
             let temp_row = [];
@@ -558,7 +594,8 @@ class GameGrid {
     }
     clearParticles() {
         this.particles = [];
-        this.checkInterference = false;
+        this.potentialInterferenceParticles = [];
+        this.endpointCounter = {};
     }
 }
 exports.GameGrid = GameGrid;
