@@ -113,20 +113,22 @@ class EndPoint extends game_object_1.GameObject {
         p.push();
         p.fill(0, 255, 0);
         p.stroke(255);
-        p.strokeWeight(4);
+        p.strokeWeight(4 * this.scale);
         p.rotate(game_object_1.getRotation(this.direction));
+        const valOne = 15 * this.scale;
+        const valTwo = 30 * this.scale;
         p.beginShape();
-        p.vertex(-15, -30);
-        p.vertex(15, -30);
-        p.vertex(15, 30);
-        p.vertex(-15, 30);
+        p.vertex(-valOne, -valTwo);
+        p.vertex(valOne, -valTwo);
+        p.vertex(valOne, valTwo);
+        p.vertex(-valOne, valTwo);
         p.endShape();
-        p.arc(-15, 0, 45, 60, 90, 270);
+        p.arc(-valOne, 0, 45 * this.scale, 60 * this.scale, 90, 270);
         //percentage ring
-        p.strokeWeight(6);
+        p.strokeWeight(6 * this.scale);
         p.noFill();
         p.stroke(255);
-        p.arc(0, 0, 100, 100, 0, 360 * this.percentage);
+        p.arc(0, 0, 100 * this.scale, 100 * this.scale, 0, 360 * this.percentage);
         p.pop();
         if (this.counter[this.index]) {
             this.calcNewPercentage();
@@ -292,6 +294,7 @@ class GameGrid {
         this.potentialInterferenceParticles = [];
         this.endpointCounter = {};
         this.endpointNum = 0;
+        this.currentScale = 1;
         //adds the direction to the index_array
         this.idxCalc = (arr, dir) => arr.map((num, idx) => num + dir[idx]);
         //checks if the index_array has indexes that are out of bounds
@@ -324,17 +327,20 @@ class GameGrid {
             return;
         }
         const [x, y] = field_tile_1.FieldTile.calc_middle_of_tile(p, this.startX, this.startY, this.gridSize);
+        let particle;
         switch (particleType) {
             case particle_1.ParticleTypes.Quantum:
-                this.particles.push(new quantum_particle_1.QuantumParticle(x, y, this.start.direction));
+                particle = new quantum_particle_1.QuantumParticle(x, y, this.start.direction);
                 break;
             case particle_1.ParticleTypes.Normal:
-                this.particles.push(new normal_particle_1.NormalParticle(x, y, this.start.direction));
+                particle = new normal_particle_1.NormalParticle(x, y, this.start.direction);
                 break;
             case particle_1.ParticleTypes.Interference:
-                this.particles.push(new interference_particle_1.InterferenceParticle(interferenceParams.x, interferenceParams.y, interferenceParams.dir, interferenceParams.destructive, interferenceParams.phase));
+                particle = new interference_particle_1.InterferenceParticle(interferenceParams.x, interferenceParams.y, interferenceParams.dir, interferenceParams.destructive, interferenceParams.phase);
                 break;
         }
+        particle.setScale(this.currentScale);
+        this.particles.push(particle);
     }
     removeParticle(particle) {
         //remove particle
@@ -397,6 +403,7 @@ class GameGrid {
                         const new_particle = new quantum_particle_1.QuantumParticle(x, y, new_dirs.pop()); //gets mirrored
                         new_particle.setSuperposition(true);
                         new_particle.setPhase(shift_phase ? !particle.getPhase() : particle.getPhase());
+                        new_particle.setScale(this.currentScale);
                         this.particles.push(new_particle);
                         this.potentialInterferenceParticles.push(new_particle);
                     }
@@ -578,6 +585,16 @@ class GameGrid {
         if (obj instanceof end_block_1.EndPoint) {
             obj.setCounter(this.endpointCounter, this.endpointNum++);
         }
+        obj.setScale(this.currentScale);
+    }
+    setNewScale(scale) {
+        this.currentScale = scale;
+        for (let index = 0; index < this.gridSize; index++) {
+            for (let j = 0; j < this.gridSize; j++) {
+                this.grid[j][index].get_object().setScale(scale);
+            }
+        }
+        this.particles.forEach((particle) => particle.setScale(scale));
     }
     clearGrid() {
         this.start = null;
@@ -632,7 +649,11 @@ function getRotation(dir) {
 exports.getRotation = getRotation;
 class GameObject {
     constructor(dir) {
+        this.scale = 1;
         this.direction = dir;
+    }
+    setScale(scale) {
+        this.scale = scale;
     }
     rotateRight() {
         switch (this.direction) {
@@ -887,9 +908,9 @@ class HalfMirror extends mirror_1.Mirror {
         p.rotate(game_object_1.getRotation(this.direction) - 45);
         p.stroke(255);
         p.fill(this.r, this.g, this.b);
-        p.rect(0, 0, this.width, this.height);
+        p.rect(0, 0, this.width * this.scale, this.height * this.scale);
         p.fill(255);
-        p.rect(0, 3, this.width, 3);
+        p.rect(0, 3, this.width * this.scale, 3 * this.scale);
         p.pop();
     }
 }
@@ -931,19 +952,20 @@ class InterferenceParticle extends particle_1.Particle {
         p.noFill();
         p.strokeWeight(2);
         if (this.destructive) {
-            const x = this.size;
-            const y = this.size;
-            const yScaled = y * 2.5 * (1.01 - this.stepCounter++ / this.maxSteps);
+            const x = this.size * this.scale;
+            const y = this.size * this.scale;
+            const fadeScale = 1.01 - this.stepCounter++ / (this.maxSteps * this.scale);
+            const yScaled = y * 2.5 * fadeScale;
             p.stroke(0, 0, 255);
             p.bezier(-x, 0, 0, -yScaled, 0, yScaled, x, 0);
             p.stroke(255, 0, 0);
             p.bezier(-x, 0, 0, yScaled, 0, -yScaled, x, 0);
             //superposition ring
             this.spin += 360 / 60;
-            p.stroke(255, 0, 0);
-            p.arc(0, 0, this.size * 2, this.size * 2, 0 + this.spin, 90 + this.spin);
+            p.stroke(255, 0, 0, 255 * fadeScale);
+            p.arc(0, 0, this.size * 2 * this.scale, this.size * 2 * this.scale, 0 + this.spin, 90 + this.spin);
             p.arc(0, 0, x * 2, y * 2, 180 + this.spin, 270 + this.spin);
-            p.stroke(0, 0, 255);
+            p.stroke(0, 0, 255, 255 * fadeScale);
             p.arc(0, 0, x * 2, y * 2, 90 + this.spin, 180 + this.spin);
             p.arc(0, 0, x * 2, y * 2, 270 + this.spin, 0 + this.spin);
             if (this.spin >= 360) {
@@ -951,23 +973,25 @@ class InterferenceParticle extends particle_1.Particle {
             }
         }
         else {
-            const x = this.size;
-            const y = this.phase_shifted ? this.size : -this.size;
-            const scale = this.stepCounter >= this.maxSteps
+            const x = this.size * this.scale;
+            const y = this.phase_shifted
+                ? this.size * this.scale
+                : -this.size * this.scale;
+            const fadeScale = this.stepCounter >= this.maxSteps * this.scale
                 ? 1
-                : this.stepCounter++ / this.maxSteps;
+                : this.stepCounter++ / (this.maxSteps * this.scale);
             if (this.phase_shifted) {
                 p.stroke(0, 0, 255);
             }
             else {
                 p.stroke(255, 0, 0);
             }
-            p.bezier(-x, 0, 0, y * -2 * scale, 0, y * 2 * scale, x, 0);
+            p.bezier(-x, 0, 0, y * -2 * fadeScale, 0, y * 2 * fadeScale, x, 0);
             if (this.superposition) {
-                const colorScale = 255 * scale;
+                const colorScale = 255 * fadeScale;
                 this.spin += 360 / 60;
                 p.stroke(255, colorScale, 0);
-                p.arc(0, 0, this.size * 2, this.size * 2, 0 + this.spin, 90 + this.spin);
+                p.arc(0, 0, this.size * 2 * this.scale, this.size * 2 * this.scale, 0 + this.spin, 90 + this.spin);
                 p.arc(0, 0, x * 2, y * 2, 180 + this.spin, 270 + this.spin);
                 p.stroke(colorScale, colorScale, 255 - colorScale);
                 p.arc(0, 0, x * 2, y * 2, 90 + this.spin, 180 + this.spin);
@@ -978,26 +1002,10 @@ class InterferenceParticle extends particle_1.Particle {
             }
             else {
                 p.stroke(255, 255, 0);
-                p.circle(0, 0, this.size * 2);
+                p.circle(0, 0, this.size * 2 * this.scale);
             }
         }
         p.pop();
-    }
-    move() {
-        switch (this.direction) {
-            case game_object_1.Direction.Up:
-                this.y--;
-                break;
-            case game_object_1.Direction.Left:
-                this.x--;
-                break;
-            case game_object_1.Direction.Down:
-                this.y++;
-                break;
-            case game_object_1.Direction.Right:
-                this.x++;
-                break;
-        }
     }
     setSuperposition(bool) {
         this.superposition = bool;
@@ -1058,7 +1066,7 @@ class Mirror extends game_object_1.GameObject {
         p.rotate(game_object_1.getRotation(this.direction) - 45);
         p.stroke(255);
         p.fill(this.r, this.g, this.b);
-        p.rect(0, 0, this.width, this.height);
+        p.rect(0, 0, this.width * this.scale, this.height * this.scale);
         p.pop();
     }
 }
@@ -1090,24 +1098,8 @@ class NormalParticle extends particle_1.Particle {
         p.noFill();
         p.strokeWeight(2);
         p.stroke(255, 255, 0);
-        p.circle(0, 0, this.size * 2);
+        p.circle(0, 0, this.size * 2 * this.scale);
         p.pop();
-    }
-    move() {
-        switch (this.direction) {
-            case game_object_1.Direction.Up:
-                this.y--;
-                break;
-            case game_object_1.Direction.Left:
-                this.x--;
-                break;
-            case game_object_1.Direction.Down:
-                this.y++;
-                break;
-            case game_object_1.Direction.Right:
-                this.x++;
-                break;
-        }
     }
     //true if out of bounds, false if inside grid
     checkOutOfBounds(p) {
@@ -1123,7 +1115,7 @@ class NormalParticle extends particle_1.Particle {
         return this.direction;
     }
     getXY() {
-        return [this.x, this.y];
+        return [Math.floor(this.x), Math.floor(this.y)];
     }
     isNoDraw() {
         return false;
@@ -1135,12 +1127,13 @@ exports.NormalParticle = NormalParticle;
 /***/ }),
 
 /***/ 893:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Particle = exports.ParticleTypes = void 0;
+const game_object_1 = __webpack_require__(357);
 var ParticleTypes;
 (function (ParticleTypes) {
     ParticleTypes[ParticleTypes["Quantum"] = 0] = "Quantum";
@@ -1148,6 +1141,43 @@ var ParticleTypes;
     ParticleTypes[ParticleTypes["Interference"] = 2] = "Interference";
 })(ParticleTypes = exports.ParticleTypes || (exports.ParticleTypes = {}));
 class Particle {
+    constructor() {
+        this.scale = 1;
+    }
+    setScale(scale) {
+        this.scale = scale;
+    }
+    //TODO: try to scale the speed/move better
+    move() {
+        // switch (this.direction) {
+        //   case Direction.Up:
+        //     this.y -= this.scale;
+        //     break;
+        //   case Direction.Left:
+        //     this.x -= this.scale;
+        //     break;
+        //   case Direction.Down:
+        //     this.y += this.scale;
+        //     break;
+        //   case Direction.Right:
+        //     this.x += this.scale;
+        //     break;
+        // }
+        switch (this.direction) {
+            case game_object_1.Direction.Up:
+                this.y--;
+                break;
+            case game_object_1.Direction.Left:
+                this.x--;
+                break;
+            case game_object_1.Direction.Down:
+                this.y++;
+                break;
+            case game_object_1.Direction.Right:
+                this.x++;
+                break;
+        }
+    }
 }
 exports.Particle = Particle;
 
@@ -1183,8 +1213,8 @@ class QuantumParticle extends particle_1.Particle {
         p.translate(this.x, this.y);
         p.noFill();
         p.strokeWeight(2);
-        const x = this.size;
-        const y = this.phase_shifted ? this.size : -this.size;
+        const x = this.size * this.scale;
+        const y = this.phase_shifted ? this.size * this.scale : -this.size * this.scale;
         if (this.phase_shifted) {
             p.stroke(0, 0, 255);
         }
@@ -1195,7 +1225,7 @@ class QuantumParticle extends particle_1.Particle {
         if (this.superposition) {
             this.spin += 360 / 60;
             p.stroke(255, 0, 0);
-            p.arc(0, 0, this.size * 2, this.size * 2, 0 + this.spin, 90 + this.spin);
+            p.arc(0, 0, this.size * 2 * this.scale, this.size * 2 * this.scale, 0 + this.spin, 90 + this.spin);
             p.arc(0, 0, x * 2, y * 2, 180 + this.spin, 270 + this.spin);
             p.stroke(0, 0, 255);
             p.arc(0, 0, x * 2, y * 2, 90 + this.spin, 180 + this.spin);
@@ -1206,25 +1236,9 @@ class QuantumParticle extends particle_1.Particle {
         }
         else {
             p.stroke(255, 255, 0);
-            p.circle(0, 0, this.size * 2);
+            p.circle(0, 0, this.size * 2 * this.scale);
         }
         p.pop();
-    }
-    move() {
-        switch (this.direction) {
-            case game_object_1.Direction.Up:
-                this.y--;
-                break;
-            case game_object_1.Direction.Left:
-                this.x--;
-                break;
-            case game_object_1.Direction.Down:
-                this.y++;
-                break;
-            case game_object_1.Direction.Right:
-                this.x++;
-                break;
-        }
     }
     setSuperposition(bool) {
         this.superposition = bool;
@@ -1282,15 +1296,17 @@ class StartPoint extends game_object_1.GameObject {
         p.push();
         p.fill(255, 255, 0);
         p.stroke(255);
-        p.strokeWeight(4);
+        p.strokeWeight(4 * this.scale);
         p.rotate(game_object_1.getRotation(this.direction));
+        const valOne = 15 * this.scale;
+        const valTwo = 30 * this.scale;
         p.beginShape();
-        p.vertex(-15, -30);
-        p.vertex(15, -30);
-        p.vertex(30, 0);
-        p.vertex(15, 30);
-        p.vertex(-15, 30);
-        p.vertex(-15, -30);
+        p.vertex(-valOne, -valTwo);
+        p.vertex(valOne, -valTwo);
+        p.vertex(valTwo, 0);
+        p.vertex(valOne, valTwo);
+        p.vertex(-valOne, valTwo);
+        p.vertex(-valOne, -valTwo);
         p.endShape();
         p.pop();
     }
@@ -1405,6 +1421,7 @@ class SpiegelDemo {
                     const width = p.windowWidth;
                     const size = height >= width ? width : height;
                     p.resizeCanvas(size, size);
+                    gameGrid.setNewScale(size / 1000);
                 };
                 p.windowResized();
                 p.angleMode(p.DEGREES);

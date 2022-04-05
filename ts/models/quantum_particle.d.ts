@@ -6,13 +6,9 @@ export declare class QuantumParticle extends Particle {
     private phase_shifted;
     private superposition;
     private spin;
-    private x;
-    private y;
-    private direction;
     private noDraw;
     constructor(x: number, y: number, dir?: Direction);
     draw(p: p5): void;
-    move(): void;
     setSuperposition(bool: boolean): void;
     setPhase(bool: boolean): void;
     getPhase(): boolean;

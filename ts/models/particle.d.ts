@@ -7,10 +7,15 @@ export declare enum ParticleTypes {
 }
 export declare abstract class Particle {
     abstract draw(p: p5): void;
-    abstract move(): void;
     abstract checkOutOfBounds(p: p5): boolean;
     abstract setDirection(dir: Direction): void;
     abstract getDirection(): Direction;
     abstract getXY(): [number, number];
     abstract isNoDraw(): boolean;
+    protected scale: number;
+    setScale(scale: number): void;
+    protected x: number;
+    protected y: number;
+    protected direction: Direction;
+    move(): void;
 }

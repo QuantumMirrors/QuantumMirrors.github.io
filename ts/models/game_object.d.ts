@@ -9,9 +9,11 @@ export declare type Direction = typeof Direction[keyof typeof Direction];
 export declare function getRotation(dir: Direction): number;
 export declare abstract class GameObject {
     direction: Direction;
+    scale: number;
     constructor(dir: Direction);
     abstract draw(p: p5): void;
     abstract getDirections(entry_dir: Direction): Direction[];
+    setScale(scale: number): void;
     rotateRight(): void;
 }
 export declare class BaseObject extends GameObject {

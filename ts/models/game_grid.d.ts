@@ -14,6 +14,7 @@ export declare class GameGrid {
     private potentialInterferenceParticles;
     private endpointCounter;
     private endpointNum;
+    private currentScale;
     constructor();
     draw(p: p5): void;
     addParticle(p: p5, particleType: ParticleTypes, interferenceParams?: {
@@ -40,6 +41,7 @@ export declare class GameGrid {
     private checkMousePosition;
     private checkPosition;
     add_game_object(obj: GameObject, x_idx: number, y_idx: number): void;
+    setNewScale(scale: number): void;
     clearGrid(): void;
     clearParticles(): void;
 }
