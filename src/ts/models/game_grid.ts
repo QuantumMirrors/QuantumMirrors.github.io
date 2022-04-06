@@ -238,7 +238,12 @@ export class GameGrid {
   //handling of clicking and dragging in the grid
   grid_clicked(
     p: p5,
-    trigger_popup: (x_idx: number, y_idx: number, field_size: number) => void
+    trigger_popup: (
+      x_idx: number,
+      y_idx: number,
+      mid_x: number,
+      mid_y: number
+    ) => void
   ) {
     if (!this.checkMousePosition(p)) {
       return;
@@ -252,7 +257,13 @@ export class GameGrid {
     if (this.grid[y][x].check_object()) {
       this.grid[y][x].rotate_object();
     } else {
-      trigger_popup(x, y, Math.floor(p.width / this.gridSize));
+      const [x_trans, y_trans, middle] = FieldTile.calc_middle_of_tile(
+        p,
+        x,
+        y,
+        this.gridSize
+      );
+      trigger_popup(x, y, x_trans, y_trans);
     }
   }
 
@@ -453,6 +464,10 @@ export class GameGrid {
     }
 
     this.particles.forEach((particle) => particle.setScale(scale));
+  }
+
+  getScale() {
+    return this.currentScale;
   }
 
   clearGrid() {

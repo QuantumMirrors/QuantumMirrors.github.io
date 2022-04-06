@@ -18,7 +18,13 @@ export class Tutorial {
   private idxTutorialStep: number;
   private currentTutorialStep: TutorialStep;
 
-  constructor(canvas: p5.Element, p: p5, gridSize: number) {
+  constructor(
+    canvas: p5.Element,
+    p: p5,
+    gridSize: number,
+    endTutorialCallback: () => void,
+    endCallback: () => void
+  ) {
     this.canvas = canvas;
     this.p = p;
     this.gridSize = gridSize;
@@ -43,6 +49,10 @@ export class Tutorial {
           this.nextTutorialStep();
         } else if (event.detail === "previous") {
           this.previousTutorialStep();
+        } else if (event.detail === "end") {
+          endCallback();
+        } else if (event.detail === "endTut") {
+          endTutorialCallback();
         }
       }
     );
@@ -75,10 +85,10 @@ export class Tutorial {
       canvasPos.x + x,
       canvasPos.y + y,
       circleSize,
-      canvasPos.x + this.currentTutorialStep.cardX * (canvasSize.width/1000),
-      canvasPos.y + this.currentTutorialStep.cardY * (canvasSize.height/1000),
-      this.currentTutorialStep.cardWidth * (canvasSize.width/1000),
-      this.currentTutorialStep.cardHeight * (canvasSize.height/1000)
+      canvasPos.x + this.currentTutorialStep.cardX * (canvasSize.width / 1000),
+      canvasPos.y + this.currentTutorialStep.cardY * (canvasSize.height / 1000),
+      this.currentTutorialStep.cardWidth * (canvasSize.width / 1000),
+      this.currentTutorialStep.cardHeight * (canvasSize.height / 1000)
     );
     tut_updateText(this.currentTutorialStep.html);
   }

@@ -4,10 +4,12 @@ import { Direction, GameObject, getRotation } from "./game_object";
 export class EndPoint extends GameObject {
   private counter: { [index: number]: number };
   private index: number;
-  private percentage = 0;
+  private actualPercentage = 0;
+  private expectedPercentage = 0;
 
-  constructor(dir = Direction.Right) {
+  constructor(expectedPercentage = 0, dir = Direction.Right) {
     super(dir);
+    this.expectedPercentage = expectedPercentage / 100;
   }
 
   draw(p: p5) {
@@ -31,16 +33,54 @@ export class EndPoint extends GameObject {
 
     p.arc(-valOne, 0, 45 * this.scale, 60 * this.scale, 90, 270);
 
-    //percentage ring
+    //actual percentage ring
     p.strokeWeight(6 * this.scale);
     p.noFill();
-    p.stroke(255);
-    p.arc(0, 0, 100 * this.scale, 100 * this.scale, 0, 360 * this.percentage);
+    p.stroke(0, 155, 145);
+    p.arc(
+      0,
+      0,
+      100 * this.scale,
+      100 * this.scale,
+      -90,
+      -90 + 360 * this.actualPercentage
+    );
+
+    //expected percentage ring
+    if (this.actualPercentage > 0) {
+      p.strokeWeight(2.6 * this.scale);
+      p.noFill();
+      p.stroke(255);
+      p.arc(
+        0,
+        0,
+        98 * this.scale,
+        98 * this.scale,
+        -90,
+        -90 + 360 * this.expectedPercentage
+      );
+    } else {
+      p.strokeWeight(6 * this.scale);
+      p.noFill();
+      p.stroke(255);
+      p.arc(
+        0,
+        0,
+        100 * this.scale,
+        100 * this.scale,
+        -90,
+        -90 + 360 * this.expectedPercentage
+      );
+    }
 
     p.pop();
 
     if (this.counter[this.index]) {
       this.calcNewPercentage();
+    }
+
+    if(this.expectedPercentage > 0 && this.actualPercentage == this.expectedPercentage){
+      //trigger next level
     }
   }
 
@@ -59,7 +99,7 @@ export class EndPoint extends GameObject {
 
   private calcNewPercentage() {
     const sum = Object.values(this.counter).reduce((prev, cur) => prev + cur);
-    this.percentage = this.counter[this.index] / sum;
+    this.actualPercentage = this.counter[this.index] / sum;
   }
 
   getDirections(): Direction[] {

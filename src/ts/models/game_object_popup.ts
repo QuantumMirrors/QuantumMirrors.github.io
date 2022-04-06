@@ -1,5 +1,6 @@
 import p5 from "p5";
 import { EndPoint } from "./end_block";
+import { FieldTile } from "./field_tile";
 import { FullMirror } from "./full_mirror";
 import { GameGrid } from "./game_grid";
 import { GameObject } from "./game_object";
@@ -14,21 +15,30 @@ export class GameObjectPopup {
   private x: number;
   private y: number;
 
+  private shown = false;
+  private grid: GameGrid;
+
   constructor(p: p5, gameGrid: GameGrid) {
+    this.grid = gameGrid;
+
     this.dvi1 = p.createDiv();
     this.dvi1.parent("game-object-popup");
-    this.dvi1.position(-100, -100);
-    this.dvi1.size(100, 100);
-    // div.style("background-color", "blue");
+    this.dvi1.position(-500, -500);
+    // this.dvi1.size(100, 100);
+
     this.div2 = p.createDiv();
     this.div2.parent(this.dvi1);
-    this.div2.size(100, 100);
-    // div2.style("background-color", "white");
+    // this.div2.size(100, 100);
+
     this.div3 = p.createDiv();
     this.div3.parent(this.div2);
-    this.div3.size(90, 90);
+    // this.div3.size(90, 90);
     this.div3.center();
-    // this.div3.style("background-color", "black");
+    this.div3.addClass("popup-btn");
+
+    this.dvi1.addClass("popup-size");
+    this.div2.addClass("popup-size");
+    this.div3.addClass("popup-size");
 
     const button1 = p.createButton("FM");
     button1.mouseClicked(() => {
@@ -71,18 +81,34 @@ export class GameObjectPopup {
 
   hide() {
     // this.div3.hide();
-    this.dvi1.position(-200, -200);
+    this.dvi1.position(-500, -500);
+    this.shown = false;
   }
 
-  show(x: number, y: number, field_size: number) {
+  show(x: number, y: number, mid_x: number, mid_y: number) {
     this.x = x;
     this.y = y;
 
-    this.dvi1.position(x * field_size, y * field_size);
-    this.dvi1.size(field_size, field_size);
-    this.div2.size(field_size, field_size);
-    this.div3.size(field_size * 0.9, field_size * 0.9);
+    const { width, height } = this.dvi1.size() as {
+      width: number;
+      height: number;
+    };
+    this.dvi1.position(mid_x - width / 2, mid_y - height / 2);
+    console.log(this.dvi1.position());
 
-    // this.div3.show();
+    this.shown = true;
+  }
+
+  windowResized(p: p5) {
+    if (this.shown) {
+      const [mid_x, mid_y, middle] = FieldTile.calc_middle_of_tile(
+        p,
+        this.x,
+        this.y,
+        this.grid.gridSize
+      );
+
+      this.show(this.x, this.y, mid_x, mid_y);
+    }
   }
 }

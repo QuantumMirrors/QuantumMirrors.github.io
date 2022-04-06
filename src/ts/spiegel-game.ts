@@ -1,4 +1,5 @@
 import p5 from "p5";
+import { FieldTile } from "./models/field_tile";
 import { GameGrid } from "./models/game_grid";
 import { GameObject } from "./models/game_object";
 import { GameObjectPopup } from "./models/game_object_popup";
@@ -56,8 +57,8 @@ export class SpiegelDemo {
           gameGrid.grid_drag_end(p);
           is_drag = false;
         } else {
-          gameGrid.grid_clicked(p, (x, y, field_size) => {
-            gameObjectPopup.show(x, y, field_size);
+          gameGrid.grid_clicked(p, (x, y, mid_x, mid_y) => {
+            gameObjectPopup.show(x, y, mid_x, mid_y);
           });
         }
       });
@@ -76,7 +77,9 @@ export class SpiegelDemo {
         const width = p.windowWidth;
         const size = height >= width ? width : height;
         p.resizeCanvas(size, size);
-        gameGrid.setNewScale(size/1000);
+        gameGrid.setNewScale(size / 1000);
+
+        gameObjectPopup.windowResized(p);
       };
       p.windowResized();
 
@@ -98,7 +101,19 @@ export class SpiegelDemo {
         const level: string = levelSelect.value();
         if (level == "Tutorial") {
           await loadLevel("tutorial");
-          tutorial = new Tutorial(canvas, p, gameGrid.gridSize);
+          tutorial = new Tutorial(
+            canvas,
+            p,
+            gameGrid.gridSize,
+            () => {
+              levelSelect.selected("Level 1");
+              loadLevel("level1");
+              tutorial.remove();
+            },
+            () => {
+              tutorial.remove();
+            }
+          );
           tutorial.start();
         } else if (level == "Sandbox") {
           gameGrid.clearGrid();
@@ -107,6 +122,7 @@ export class SpiegelDemo {
           await loadLevel(`level${level.slice(-1)}`);
         }
       });
+      levelSelect.addClass("level-select")
 
       playButton = p.createButton("Pause");
       playButton.mousePressed(() => {
@@ -118,22 +134,44 @@ export class SpiegelDemo {
           playButton.html("Play");
         }
       });
+      playButton.addClass("play-btn")
 
-      particleChooser = p.createCheckbox("Use Quantum", true);
+      particleChooser = p.createCheckbox("", true);
       particleChooser.changed(() => gameGrid.clearParticles());
+      let label = particleChooser.child()[0] as HTMLLabelElement;
+      label.className = "particle-chooser";
+      let switchDiv = p.createDiv();
+      switchDiv.addClass("slider");
+      switchDiv.addClass("round");
+      switchDiv.parent(label);
 
       fpsSlider.parent("controls");
       particleSlider.parent("controls");
       playButton.parent("controls");
-      particleChooser.parent("controls");
+      particleChooser.parent("particle_chooser");
       levelSelect.parent("controls");
+
+      fpsSlider.addClass("range_slider");
+      particleSlider.addClass("range_slider");
 
       //load tutorial level
       levelSelect.selected("Tutorial");
       loadLevel("tutorial");
 
       //initialize overlays
-      tutorial = new Tutorial(canvas, p, gameGrid.gridSize);
+      tutorial = new Tutorial(
+        canvas,
+        p,
+        gameGrid.gridSize,
+        () => {
+          levelSelect.selected("Level 1");
+          loadLevel("level1");
+          tutorial.remove();
+        },
+        () => {
+          tutorial.remove();
+        }
+      );
       welcome = new WelcomeScreen(
         () => {
           levelSelect.selected("Level 1");

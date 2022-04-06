@@ -53,6 +53,16 @@ function previous(host: any) {
   host.triggerUpdate = !host.triggerUpdate; //weird workaround to trigger a rerender when no other property was changed
 }
 
+function end(host: any) {
+  dispatch(host, "custom-change", { detail: "end" });
+  host.triggerUpdate = !host.triggerUpdate;
+}
+
+function endTutorial(host: any) {
+  dispatch(host, "custom-change", { detail: "endTut" });
+  host.triggerUpdate = !host.triggerUpdate;
+}
+
 export default define<TutorialOverlay>({
   tag: "tutorial-overlay",
   circleX: 0,
@@ -111,6 +121,14 @@ export default define<TutorialOverlay>({
           >
             Next
           </button>
+          <button
+            id="nextButton"
+            hidden="${activeNext ? "hidden" : ""}"
+            onclick="${endTutorial}"
+          >
+            End Tutorial
+          </button>
+          <button id="endButton" onclick="${end}">X</button>
         </div>
       </div>
 
@@ -170,6 +188,7 @@ export default define<TutorialOverlay>({
 
         .tutorial-card > button:hover {
           background: #a5b4fc;
+          cursor: pointer;
         }
 
         .tutorial-card > #previousButton {
@@ -186,7 +205,14 @@ export default define<TutorialOverlay>({
           color: white;
         }
 
-        .tutorial-card > h1,
+        <!-- .tutorial-card > #endButton {
+          position: absolute;
+          right: 0;
+          top: 0;
+          color: white;
+          background: none;
+        }
+        -- > .tutorial-card > h1,
         h2,
         h3,
         h4,

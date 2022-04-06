@@ -7,7 +7,7 @@ import { StartPoint } from "../../ts/models/start_block";
 export default function levels(): [GameObject, number, number][] {
   return [
     [new StartPoint(), 0, 6],
-    [new EndPoint(Direction.Up), 6, 0],
+    [new EndPoint(0, Direction.Up), 6, 0],
     [new EndPoint(), 9, 3],
     [new FullMirror(), 3, 3],
     [new FullMirror(), 6, 6],

@@ -158,6 +158,6 @@ export class InterferenceParticle extends Particle {
   }
 
   isNoDraw() {
-    return this.destructive && this.stepCounter >= this.maxSteps;
+    return this.destructive && this.stepCounter >= this.maxSteps * this.scale;
   }
 }
