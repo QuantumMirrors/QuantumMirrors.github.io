@@ -37,7 +37,7 @@ const start_block_1 = __webpack_require__(461);
 function levels() {
     return [
         [new start_block_1.StartPoint(), 0, 6],
-        [new end_block_1.EndPoint(game_object_1.Direction.Up), 6, 0],
+        [new end_block_1.EndPoint(0, game_object_1.Direction.Up), 6, 0],
         [new end_block_1.EndPoint(), 9, 3],
         [new full_mirror_1.FullMirror(), 3, 3],
         [new full_mirror_1.FullMirror(), 6, 6],
@@ -63,7 +63,7 @@ const start_block_1 = __webpack_require__(461);
 function levels() {
     return [
         [new start_block_1.StartPoint(), 0, 6],
-        [new end_block_1.EndPoint(game_object_1.Direction.Up), 6, 0],
+        [new end_block_1.EndPoint(0, game_object_1.Direction.Up), 6, 0],
         [new full_mirror_1.FullMirror(), 6, 6],
     ];
 }
@@ -85,8 +85,8 @@ const start_block_1 = __webpack_require__(461);
 function levels() {
     return [
         [new start_block_1.StartPoint(), 1, 6],
-        [new end_block_1.EndPoint(), 8, 3],
-        [new end_block_1.EndPoint(), 8, 6],
+        [new end_block_1.EndPoint(50), 8, 3],
+        [new end_block_1.EndPoint(50), 8, 6],
         [new full_mirror_1.FullMirror(), 4, 3],
         [new half_mirror_1.HalfMirror(), 4, 6],
     ];
@@ -105,9 +105,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.EndPoint = void 0;
 const game_object_1 = __webpack_require__(357);
 class EndPoint extends game_object_1.GameObject {
-    constructor(dir = game_object_1.Direction.Right) {
+    constructor(expectedPercentage = 0, dir = game_object_1.Direction.Right) {
         super(dir);
-        this.percentage = 0;
+        this.actualPercentage = 0;
+        this.expectedPercentage = 0;
+        this.expectedPercentage = expectedPercentage / 100;
     }
     draw(p) {
         p.push();
@@ -124,14 +126,30 @@ class EndPoint extends game_object_1.GameObject {
         p.vertex(-valOne, valTwo);
         p.endShape();
         p.arc(-valOne, 0, 45 * this.scale, 60 * this.scale, 90, 270);
-        //percentage ring
+        //actual percentage ring
         p.strokeWeight(6 * this.scale);
         p.noFill();
-        p.stroke(255);
-        p.arc(0, 0, 100 * this.scale, 100 * this.scale, 0, 360 * this.percentage);
+        p.stroke(0, 155, 145);
+        p.arc(0, 0, 100 * this.scale, 100 * this.scale, -90, -90 + 360 * this.actualPercentage);
+        //expected percentage ring
+        if (this.actualPercentage > 0) {
+            p.strokeWeight(2.6 * this.scale);
+            p.noFill();
+            p.stroke(255);
+            p.arc(0, 0, 98 * this.scale, 98 * this.scale, -90, -90 + 360 * this.expectedPercentage);
+        }
+        else {
+            p.strokeWeight(6 * this.scale);
+            p.noFill();
+            p.stroke(255);
+            p.arc(0, 0, 100 * this.scale, 100 * this.scale, -90, -90 + 360 * this.expectedPercentage);
+        }
         p.pop();
         if (this.counter[this.index]) {
             this.calcNewPercentage();
+        }
+        if (this.expectedPercentage > 0 && this.actualPercentage == this.expectedPercentage) {
+            //trigger next level
         }
     }
     setCounter(counter, index) {
@@ -148,7 +166,7 @@ class EndPoint extends game_object_1.GameObject {
     }
     calcNewPercentage() {
         const sum = Object.values(this.counter).reduce((prev, cur) => prev + cur);
-        this.percentage = this.counter[this.index] / sum;
+        this.actualPercentage = this.counter[this.index] / sum;
     }
     getDirections() {
         return [];
@@ -456,7 +474,8 @@ class GameGrid {
             this.grid[y][x].rotate_object();
         }
         else {
-            trigger_popup(x, y, Math.floor(p.width / this.gridSize));
+            const [x_trans, y_trans, middle] = field_tile_1.FieldTile.calc_middle_of_tile(p, x, y, this.gridSize);
+            trigger_popup(x, y, x_trans, y_trans);
         }
     }
     grid_drag_start(p) {
@@ -596,6 +615,9 @@ class GameGrid {
         }
         this.particles.forEach((particle) => particle.setScale(scale));
     }
+    getScale() {
+        return this.currentScale;
+    }
     clearGrid() {
         this.start = null;
         this.clearParticles();
@@ -699,25 +721,29 @@ exports.BaseObject = BaseObject;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GameObjectPopup = void 0;
 const end_block_1 = __webpack_require__(221);
+const field_tile_1 = __webpack_require__(311);
 const full_mirror_1 = __webpack_require__(475);
 const half_mirror_1 = __webpack_require__(798);
 const start_block_1 = __webpack_require__(461);
 class GameObjectPopup {
     constructor(p, gameGrid) {
+        this.shown = false;
+        this.grid = gameGrid;
         this.dvi1 = p.createDiv();
         this.dvi1.parent("game-object-popup");
-        this.dvi1.position(-100, -100);
-        this.dvi1.size(100, 100);
-        // div.style("background-color", "blue");
+        this.dvi1.position(-500, -500);
+        // this.dvi1.size(100, 100);
         this.div2 = p.createDiv();
         this.div2.parent(this.dvi1);
-        this.div2.size(100, 100);
-        // div2.style("background-color", "white");
+        // this.div2.size(100, 100);
         this.div3 = p.createDiv();
         this.div3.parent(this.div2);
-        this.div3.size(90, 90);
+        // this.div3.size(90, 90);
         this.div3.center();
-        // this.div3.style("background-color", "black");
+        this.div3.addClass("popup-btn");
+        this.dvi1.addClass("popup-size");
+        this.div2.addClass("popup-size");
+        this.div3.addClass("popup-size");
         const button1 = p.createButton("FM");
         button1.mouseClicked(() => {
             gameGrid.add_game_object(new full_mirror_1.FullMirror(), this.x, this.y);
@@ -754,16 +780,22 @@ class GameObjectPopup {
     }
     hide() {
         // this.div3.hide();
-        this.dvi1.position(-200, -200);
+        this.dvi1.position(-500, -500);
+        this.shown = false;
     }
-    show(x, y, field_size) {
+    show(x, y, mid_x, mid_y) {
         this.x = x;
         this.y = y;
-        this.dvi1.position(x * field_size, y * field_size);
-        this.dvi1.size(field_size, field_size);
-        this.div2.size(field_size, field_size);
-        this.div3.size(field_size * 0.9, field_size * 0.9);
-        // this.div3.show();
+        const { width, height } = this.dvi1.size();
+        this.dvi1.position(mid_x - width / 2, mid_y - height / 2);
+        console.log(this.dvi1.position());
+        this.shown = true;
+    }
+    windowResized(p) {
+        if (this.shown) {
+            const [mid_x, mid_y, middle] = field_tile_1.FieldTile.calc_middle_of_tile(p, this.x, this.y, this.grid.gridSize);
+            this.show(this.x, this.y, mid_x, mid_y);
+        }
     }
 }
 exports.GameObjectPopup = GameObjectPopup;
@@ -1036,7 +1068,7 @@ class InterferenceParticle extends particle_1.Particle {
         return [this.x, this.y];
     }
     isNoDraw() {
-        return this.destructive && this.stepCounter >= this.maxSteps;
+        return this.destructive && this.stepCounter >= this.maxSteps * this.scale;
     }
 }
 exports.InterferenceParticle = InterferenceParticle;
@@ -1403,8 +1435,8 @@ class SpiegelDemo {
                         is_drag = false;
                     }
                     else {
-                        gameGrid.grid_clicked(p, (x, y, field_size) => {
-                            gameObjectPopup.show(x, y, field_size);
+                        gameGrid.grid_clicked(p, (x, y, mid_x, mid_y) => {
+                            gameObjectPopup.show(x, y, mid_x, mid_y);
                         });
                     }
                 });
@@ -1422,6 +1454,7 @@ class SpiegelDemo {
                     const size = height >= width ? width : height;
                     p.resizeCanvas(size, size);
                     gameGrid.setNewScale(size / 1000);
+                    gameObjectPopup.windowResized(p);
                 };
                 p.windowResized();
                 p.angleMode(p.DEGREES);
@@ -1439,7 +1472,13 @@ class SpiegelDemo {
                     const level = levelSelect.value();
                     if (level == "Tutorial") {
                         yield loadLevel("tutorial");
-                        tutorial = new tutorial_1.Tutorial(canvas, p, gameGrid.gridSize);
+                        tutorial = new tutorial_1.Tutorial(canvas, p, gameGrid.gridSize, () => {
+                            levelSelect.selected("Level 1");
+                            loadLevel("level1");
+                            tutorial.remove();
+                        }, () => {
+                            tutorial.remove();
+                        });
                         tutorial.start();
                     }
                     else if (level == "Sandbox") {
@@ -1450,6 +1489,7 @@ class SpiegelDemo {
                         yield loadLevel(`level${level.slice(-1)}`);
                     }
                 }));
+                levelSelect.addClass("level-select");
                 playButton = p.createButton("Pause");
                 playButton.mousePressed(() => {
                     if (playButton.html() === "Play") {
@@ -1461,18 +1501,33 @@ class SpiegelDemo {
                         playButton.html("Play");
                     }
                 });
-                particleChooser = p.createCheckbox("Use Quantum", true);
+                playButton.addClass("play-btn");
+                particleChooser = p.createCheckbox("", true);
                 particleChooser.changed(() => gameGrid.clearParticles());
+                let label = particleChooser.child()[0];
+                label.className = "particle-chooser";
+                let switchDiv = p.createDiv();
+                switchDiv.addClass("slider");
+                switchDiv.addClass("round");
+                switchDiv.parent(label);
                 fpsSlider.parent("controls");
                 particleSlider.parent("controls");
                 playButton.parent("controls");
-                particleChooser.parent("controls");
+                particleChooser.parent("particle_chooser");
                 levelSelect.parent("controls");
+                fpsSlider.addClass("range_slider");
+                particleSlider.addClass("range_slider");
                 //load tutorial level
                 levelSelect.selected("Tutorial");
                 loadLevel("tutorial");
                 //initialize overlays
-                tutorial = new tutorial_1.Tutorial(canvas, p, gameGrid.gridSize);
+                tutorial = new tutorial_1.Tutorial(canvas, p, gameGrid.gridSize, () => {
+                    levelSelect.selected("Level 1");
+                    loadLevel("level1");
+                    tutorial.remove();
+                }, () => {
+                    tutorial.remove();
+                });
                 welcome = new welcomescreen_1.WelcomeScreen(() => {
                     levelSelect.selected("Level 1");
                     loadLevel("level1");
@@ -1559,6 +1614,14 @@ function previous(host) {
     hybrids_1.dispatch(host, "custom-change", { detail: "previous" });
     host.triggerUpdate = !host.triggerUpdate; //weird workaround to trigger a rerender when no other property was changed
 }
+function end(host) {
+    hybrids_1.dispatch(host, "custom-change", { detail: "end" });
+    host.triggerUpdate = !host.triggerUpdate;
+}
+function endTutorial(host) {
+    hybrids_1.dispatch(host, "custom-change", { detail: "endTut" });
+    host.triggerUpdate = !host.triggerUpdate;
+}
 exports["default"] = hybrids_1.define({
     tag: "tutorial-overlay",
     circleX: 0,
@@ -1605,6 +1668,14 @@ exports["default"] = hybrids_1.define({
           >
             Next
           </button>
+          <button
+            id="nextButton"
+            hidden="${activeNext ? "hidden" : ""}"
+            onclick="${endTutorial}"
+          >
+            End Tutorial
+          </button>
+          <button id="endButton" onclick="${end}">X</button>
         </div>
       </div>
 
@@ -1664,6 +1735,7 @@ exports["default"] = hybrids_1.define({
 
         .tutorial-card > button:hover {
           background: #a5b4fc;
+          cursor: pointer;
         }
 
         .tutorial-card > #previousButton {
@@ -1680,7 +1752,14 @@ exports["default"] = hybrids_1.define({
           color: white;
         }
 
-        .tutorial-card > h1,
+        <!-- .tutorial-card > #endButton {
+          position: absolute;
+          right: 0;
+          top: 0;
+          color: white;
+          background: none;
+        }
+        -- > .tutorial-card > h1,
         h2,
         h3,
         h4,
@@ -1715,7 +1794,7 @@ const hybrids_1 = __webpack_require__(384);
 const field_tile_1 = __webpack_require__(311);
 const tutorial_component_1 = __webpack_require__(247);
 class Tutorial {
-    constructor(canvas, p, gridSize) {
+    constructor(canvas, p, gridSize, endTutorialCallback, endCallback) {
         this.canvas = canvas;
         this.p = p;
         this.gridSize = gridSize;
@@ -1733,6 +1812,12 @@ class Tutorial {
             }
             else if (event.detail === "previous") {
                 this.previousTutorialStep();
+            }
+            else if (event.detail === "end") {
+                endCallback();
+            }
+            else if (event.detail === "endTut") {
+                endTutorialCallback();
             }
         });
     }

@@ -6,7 +6,7 @@ export declare class Tutorial {
     private overlay;
     private idxTutorialStep;
     private currentTutorialStep;
-    constructor(canvas: p5.Element, p: p5, gridSize: number);
+    constructor(canvas: p5.Element, p: p5, gridSize: number, endTutorialCallback: () => void, endCallback: () => void);
     start(): void;
     remove(): void;
     updateOverlay(): void;

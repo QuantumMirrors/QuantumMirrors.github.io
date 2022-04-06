@@ -28,7 +28,7 @@ export declare class GameGrid {
     private drawParticles;
     private checkParticleCollision;
     checkNewInterference(p: p5): void;
-    grid_clicked(p: p5, trigger_popup: (x_idx: number, y_idx: number, field_size: number) => void): void;
+    grid_clicked(p: p5, trigger_popup: (x_idx: number, y_idx: number, mid_x: number, mid_y: number) => void): void;
     grid_drag_start(p: p5): void;
     grid_drag_end(p: p5): void;
     grid_drag_move(p: p5): void;
@@ -42,6 +42,7 @@ export declare class GameGrid {
     private checkPosition;
     add_game_object(obj: GameObject, x_idx: number, y_idx: number): void;
     setNewScale(scale: number): void;
+    getScale(): number;
     clearGrid(): void;
     clearParticles(): void;
 }

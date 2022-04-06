@@ -6,7 +6,10 @@ export declare class GameObjectPopup {
     private div3;
     private x;
     private y;
+    private shown;
+    private grid;
     constructor(p: p5, gameGrid: GameGrid);
     hide(): void;
-    show(x: number, y: number, field_size: number): void;
+    show(x: number, y: number, mid_x: number, mid_y: number): void;
+    windowResized(p: p5): void;
 }
