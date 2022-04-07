@@ -104,9 +104,9 @@ module.exports = (env, argv) => {
         filename: isDev ? "[name].css" : "[name].[contenthash].css",
         chunkFilename: isDev ? "[id].css" : "[id].[contenthash].css",
       }),
-      // new CopyPlugin({
-      //   patterns: [{ from: "res", to: "res" }],
-      // }),
+      new CopyPlugin({
+        patterns: [{ from: "res", to: "res" }],
+      }),
     ],
   };
   return config;
