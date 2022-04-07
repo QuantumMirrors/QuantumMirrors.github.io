@@ -5,6 +5,7 @@ export declare class EndPoint extends GameObject {
     private index;
     private actualPercentage;
     private expectedPercentage;
+    private percentagesEqual;
     constructor(expectedPercentage?: number, dir?: number[]);
     draw(p: p5): void;
     setCounter(counter: {
@@ -12,5 +13,6 @@ export declare class EndPoint extends GameObject {
     }, index: number): void;
     addToCounter(): void;
     private calcNewPercentage;
+    getPercentageEqual(): boolean;
     getDirections(): Direction[];
 }

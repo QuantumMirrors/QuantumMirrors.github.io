@@ -6,7 +6,8 @@ export declare class Tutorial {
     private overlay;
     private idxTutorialStep;
     private currentTutorialStep;
-    constructor(canvas: p5.Element, p: p5, gridSize: number, endTutorialCallback: () => void, endCallback: () => void);
+    private loadLevelCallback;
+    constructor(canvas: p5.Element, p: p5, gridSize: number, loadLevelCallBack: (level: string) => Promise<void>, endTutorialCallback: () => void, endCallback: () => void);
     start(): void;
     remove(): void;
     updateOverlay(): void;

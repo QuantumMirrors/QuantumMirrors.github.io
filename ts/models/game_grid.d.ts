@@ -12,6 +12,7 @@ export declare class GameGrid {
     private dragY;
     private particles;
     private potentialInterferenceParticles;
+    private endpoints;
     private endpointCounter;
     private endpointNum;
     private currentScale;
@@ -28,6 +29,7 @@ export declare class GameGrid {
     private drawParticles;
     private checkParticleCollision;
     checkNewInterference(p: p5): void;
+    checkNextLevel(): boolean;
     grid_clicked(p: p5, trigger_popup: (x_idx: number, y_idx: number, mid_x: number, mid_y: number) => void): void;
     grid_drag_start(p: p5): void;
     grid_drag_end(p: p5): void;
