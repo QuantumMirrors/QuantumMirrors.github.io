@@ -2,11 +2,18 @@ import p5 from "p5";
 import { Direction, GameObject, getRotation } from "./game_object";
 
 export class StartPoint extends GameObject {
-  constructor(dir = Direction.Right) {
+  private hidden = false;
+  constructor(dir = Direction.Right, hidden = false) {
     super(dir);
+
+    this.hidden = hidden;
   }
 
   draw(p: p5) {
+    if(this.hidden){
+      return;
+    }
+    
     p.push();
 
     p.fill(255, 255, 0);

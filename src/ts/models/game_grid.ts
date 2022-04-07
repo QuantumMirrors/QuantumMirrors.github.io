@@ -14,10 +14,7 @@ export class GameGrid {
   private grid: FieldTile[][];
   public gridSize = 10;
 
-  //TODO: noch ändern mit dem startpoint, oder halt einfach so lassen
-  private start: StartPoint;
-  private startX: number;
-  private startY: number;
+  private multiStartpoint: { start: StartPoint; x: number; y: number }[] = [];
 
   //TODO: maybe anders, maybe auch einfach nicht
   private is_drag = false;
@@ -43,9 +40,7 @@ export class GameGrid {
     p.push();
 
     //draw laser beam
-    if (this.start) {
-      this.beam_loop_start(p);
-    }
+    this.beam_loop_start(p);
 
     //draw fields with objects
     this.grid.forEach((row, y_idx) =>
@@ -62,8 +57,6 @@ export class GameGrid {
     p.pop();
   }
 
-  // private multiStartpoint: { start: StartPoint; x: number; y: number }[] = [];
-
   //particle handling
   addParticle(
     p: p5,
@@ -76,38 +69,36 @@ export class GameGrid {
       phase: boolean;
     }
   ) {
-    if (!this.start) {
-      return;
-    }
+    this.multiStartpoint.forEach(({ start, x, y }) => {
+      const [x_idx, y_idx] = FieldTile.calc_middle_of_tile(
+        p,
+        x,
+        y,
+        this.gridSize
+      );
 
-    const [x, y] = FieldTile.calc_middle_of_tile(
-      p,
-      this.startX,
-      this.startY,
-      this.gridSize
-    );
+      let particle: Particle;
+      switch (particleType) {
+        case ParticleTypes.Quantum:
+          particle = new QuantumParticle(x_idx, y_idx, start.direction);
+          break;
+        case ParticleTypes.Normal:
+          particle = new NormalParticle(x_idx, y_idx, start.direction);
+          break;
+        case ParticleTypes.Interference:
+          particle = new InterferenceParticle(
+            interferenceParams.x,
+            interferenceParams.y,
+            interferenceParams.dir,
+            interferenceParams.destructive,
+            interferenceParams.phase
+          );
+          break;
+      }
 
-    let particle: Particle;
-    switch (particleType) {
-      case ParticleTypes.Quantum:
-        particle = new QuantumParticle(x, y, this.start.direction);
-        break;
-      case ParticleTypes.Normal:
-        particle = new NormalParticle(x, y, this.start.direction);
-        break;
-      case ParticleTypes.Interference:
-        particle = new InterferenceParticle(
-          interferenceParams.x,
-          interferenceParams.y,
-          interferenceParams.dir,
-          interferenceParams.destructive,
-          interferenceParams.phase
-        );
-        break;
-    }
-
-    particle.setScale(this.currentScale);
-    this.particles.push(particle);
+      particle.setScale(this.currentScale);
+      this.particles.push(particle);
+    });
   }
 
   removeParticle(particle: Particle) {
@@ -317,8 +308,11 @@ export class GameGrid {
     this.grid[end_y][end_x].change_object(tmp);
 
     if (tmp instanceof StartPoint) {
-      this.startX = end_x;
-      this.startY = end_y;
+      // this.startX = end_x;
+      // this.startY = end_y;
+
+      const idx = this.multiStartpoint.findIndex(({ start }) => tmp == start);
+      this.multiStartpoint[idx] = { start: tmp, x: end_x, y: end_y };
     }
 
     this.is_drag = false;
@@ -341,21 +335,36 @@ export class GameGrid {
       return;
     }
 
+    const dragged_obj = this.grid[this.dragY][this.dragX].get_object();
+    if (dragged_obj instanceof StartPoint) {
+      const idx = this.multiStartpoint.findIndex(
+        ({ start }) => dragged_obj == start
+      );
+      this.multiStartpoint[idx] = {
+        start: dragged_obj,
+        x: end_x,
+        y: end_y,
+      };
+    }
+
     //swap dragged object with target object
     const tmp = this.grid[end_y][end_x].get_object();
     if (!(tmp instanceof BaseObject)) {
       return;
     }
 
-    this.grid[end_y][end_x].change_object(
-      this.grid[this.dragY][this.dragX].get_object()
-    );
+    this.grid[end_y][end_x].change_object(dragged_obj);
     this.grid[this.dragY][this.dragX].change_object(tmp);
 
-    if (tmp instanceof StartPoint) {
-      this.startX = end_x;
-      this.startY = end_y;
-    }
+    console.log(tmp);
+
+    // if (tmp instanceof StartPoint) {
+    //   const idx = this.multiStartpoint.findIndex(({ start }) => tmp == start);
+    //   const test = this.multiStartpoint[idx];
+    //   console.log({test, end_x, end_y});
+
+    //   this.multiStartpoint[idx] = { start: tmp, x: this.dragX, y: this.dragY };
+    // }
     this.grid[end_y][end_x].set_dragged(true);
     this.grid[this.dragY][this.dragX].set_dragged(false);
 
@@ -364,11 +373,9 @@ export class GameGrid {
 
   //handling of the laser beams
   private beam_loop_start(p: p5) {
-    this.beam_loop(
-      [this.startX, this.startY],
-      this.start.getDirections().pop(),
-      p
-    );
+    this.multiStartpoint.forEach(({ start, x, y }) => {
+      this.beam_loop([x, y], start.getDirections().pop(), p);
+    });
   }
 
   private beam_loop(startpoint: number[], dir: Direction, p: p5) {
@@ -455,9 +462,11 @@ export class GameGrid {
   add_game_object(obj: GameObject, x_idx: number, y_idx: number) {
     this.grid[y_idx][x_idx].change_object(obj);
     if (obj instanceof StartPoint) {
-      this.start = obj;
-      this.startX = x_idx;
-      this.startY = y_idx;
+      // this.start = obj;
+      // this.startX = x_idx;
+      // this.startY = y_idx;
+
+      this.multiStartpoint.push({ start: obj, x: x_idx, y: y_idx });
     }
 
     if (obj instanceof EndPoint) {
@@ -485,7 +494,8 @@ export class GameGrid {
   }
 
   clearGrid() {
-    this.start = null;
+    // this.start = null;
+    this.multiStartpoint = [];
     this.clearParticles();
     this.endpointNum = 0;
     this.endpoints = [];
