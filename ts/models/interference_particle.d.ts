@@ -9,7 +9,7 @@ export declare class InterferenceParticle extends Particle {
     private destructive;
     private maxSteps;
     private stepCounter;
-    constructor(x: number, y: number, dir: Direction, destructive: boolean, phase: boolean);
+    constructor(x: number, y: number, dir: Direction, destructive: boolean, phase: boolean, weight: number);
     draw(p: p5): void;
     setSuperposition(bool: boolean): void;
     setPhase(bool: boolean): void;

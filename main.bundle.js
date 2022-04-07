@@ -32,19 +32,14 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const end_block_1 = __webpack_require__(221);
 const full_mirror_1 = __webpack_require__(475);
 const game_object_1 = __webpack_require__(357);
-const half_mirror_1 = __webpack_require__(798);
 const start_block_1 = __webpack_require__(461);
 function levels() {
     return {
         quantum_particle: false,
         objects: [
-            [new start_block_1.StartPoint(), 0, 6],
-            [new end_block_1.EndPoint(0, game_object_1.Direction.Up), 6, 0],
-            [new end_block_1.EndPoint(), 9, 3],
-            [new full_mirror_1.FullMirror(), 3, 3],
-            [new full_mirror_1.FullMirror(), 6, 6],
-            [new half_mirror_1.HalfMirror(), 3, 6],
-            [new half_mirror_1.HalfMirror(), 6, 3],
+            [new start_block_1.StartPoint(), 2, 6],
+            [new end_block_1.EndPoint(100, game_object_1.Direction.Up), 6, 1],
+            [new full_mirror_1.FullMirror(game_object_1.Direction.Down), 6, 6],
         ],
     };
 }
@@ -60,16 +55,214 @@ exports["default"] = levels;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const end_block_1 = __webpack_require__(221);
-const full_mirror_1 = __webpack_require__(475);
 const game_object_1 = __webpack_require__(357);
+const half_mirror_1 = __webpack_require__(798);
 const start_block_1 = __webpack_require__(461);
 function levels() {
     return {
         quantum_particle: false,
         objects: [
-            [new start_block_1.StartPoint(), 0, 6],
-            [new end_block_1.EndPoint(0, game_object_1.Direction.Up), 6, 0],
-            [new full_mirror_1.FullMirror(), 6, 6],
+            [new start_block_1.StartPoint(), 1, 5],
+            [new end_block_1.EndPoint(50, game_object_1.Direction.Up), 5, 2],
+            [new end_block_1.EndPoint(50), 8, 5],
+            [new half_mirror_1.HalfMirror(game_object_1.Direction.Down), 5, 5],
+        ],
+    };
+}
+exports["default"] = levels;
+
+
+/***/ }),
+
+/***/ 532:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const end_block_1 = __webpack_require__(221);
+const game_object_1 = __webpack_require__(357);
+const half_mirror_1 = __webpack_require__(798);
+const start_block_1 = __webpack_require__(461);
+function levels() {
+    return {
+        quantum_particle: true,
+        objects: [
+            [new start_block_1.StartPoint(), 1, 5],
+            [new end_block_1.EndPoint(50, game_object_1.Direction.Up), 5, 2],
+            [new end_block_1.EndPoint(50), 8, 5],
+            [new half_mirror_1.HalfMirror(game_object_1.Direction.Down), 5, 5],
+        ],
+    };
+}
+exports["default"] = levels;
+
+
+/***/ }),
+
+/***/ 216:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const end_block_1 = __webpack_require__(221);
+const full_mirror_1 = __webpack_require__(475);
+const game_object_1 = __webpack_require__(357);
+const half_mirror_1 = __webpack_require__(798);
+const start_block_1 = __webpack_require__(461);
+function levels() {
+    return {
+        quantum_particle: false,
+        objects: [
+            [new start_block_1.StartPoint(), 1, 6],
+            [new end_block_1.EndPoint(50), 8, 3],
+            [new end_block_1.EndPoint(50), 8, 6],
+            [new full_mirror_1.FullMirror(game_object_1.Direction.Down), 4, 3],
+            [new half_mirror_1.HalfMirror(game_object_1.Direction.Down), 4, 6],
+        ],
+    };
+}
+exports["default"] = levels;
+
+
+/***/ }),
+
+/***/ 785:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const end_block_1 = __webpack_require__(221);
+const game_object_1 = __webpack_require__(357);
+const half_mirror_1 = __webpack_require__(798);
+const start_block_1 = __webpack_require__(461);
+function levels() {
+    return {
+        quantum_particle: false,
+        objects: [
+            [new start_block_1.StartPoint(), 1, 5],
+            [new end_block_1.EndPoint(50), 8, 3],
+            [new end_block_1.EndPoint(50), 8, 7],
+            // [new FullMirror(Direction.Down), 4, 3],
+            [new half_mirror_1.HalfMirror(game_object_1.Direction.Down), 4, 5],
+        ],
+    };
+}
+exports["default"] = levels;
+
+
+/***/ }),
+
+/***/ 877:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const end_block_1 = __webpack_require__(221);
+const game_object_1 = __webpack_require__(357);
+const half_mirror_1 = __webpack_require__(798);
+const start_block_1 = __webpack_require__(461);
+function levels() {
+    return {
+        quantum_particle: true,
+        objects: [
+            [new start_block_1.StartPoint(), 1, 5],
+            [new end_block_1.EndPoint(25), 8, 3],
+            [new end_block_1.EndPoint(50), 8, 7],
+            [new end_block_1.EndPoint(25, game_object_1.Direction.Up), 5, 1],
+            // [new FullMirror(Direction.Down), 4, 3],
+            [new half_mirror_1.HalfMirror(game_object_1.Direction.Down), 4, 5],
+        ],
+    };
+}
+exports["default"] = levels;
+
+
+/***/ }),
+
+/***/ 979:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const end_block_1 = __webpack_require__(221);
+const full_mirror_1 = __webpack_require__(475);
+const game_object_1 = __webpack_require__(357);
+const half_mirror_1 = __webpack_require__(798);
+const start_block_1 = __webpack_require__(461);
+function levels() {
+    return {
+        quantum_particle: false,
+        objects: [
+            [new start_block_1.StartPoint(), 1, 6],
+            [new end_block_1.EndPoint(50, game_object_1.Direction.Up), 6, 1],
+            [new end_block_1.EndPoint(50), 8, 3],
+            [new full_mirror_1.FullMirror(game_object_1.Direction.Down), 3, 3],
+            [new full_mirror_1.FullMirror(game_object_1.Direction.Down), 6, 6],
+            [new half_mirror_1.HalfMirror(game_object_1.Direction.Down), 3, 6],
+            [new half_mirror_1.HalfMirror(), 6, 3],
+        ],
+    };
+}
+exports["default"] = levels;
+
+
+/***/ }),
+
+/***/ 653:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const end_block_1 = __webpack_require__(221);
+const full_mirror_1 = __webpack_require__(475);
+const game_object_1 = __webpack_require__(357);
+const half_mirror_1 = __webpack_require__(798);
+const start_block_1 = __webpack_require__(461);
+function levels() {
+    return {
+        quantum_particle: true,
+        objects: [
+            [new start_block_1.StartPoint(), 1, 6],
+            [new end_block_1.EndPoint(50, game_object_1.Direction.Up), 6, 1],
+            [new end_block_1.EndPoint(50), 8, 3],
+            [new full_mirror_1.FullMirror(game_object_1.Direction.Down), 3, 3],
+            [new full_mirror_1.FullMirror(game_object_1.Direction.Down), 6, 6],
+            [new half_mirror_1.HalfMirror(game_object_1.Direction.Down), 3, 6],
+        ],
+    };
+}
+exports["default"] = levels;
+
+
+/***/ }),
+
+/***/ 706:
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const end_block_1 = __webpack_require__(221);
+const full_mirror_1 = __webpack_require__(475);
+const game_object_1 = __webpack_require__(357);
+const half_mirror_1 = __webpack_require__(798);
+const start_block_1 = __webpack_require__(461);
+function levels() {
+    return {
+        quantum_particle: true,
+        objects: [
+            [new start_block_1.StartPoint(), 1, 6],
+            [new end_block_1.EndPoint(100, game_object_1.Direction.Up), 6, 0],
+            [new end_block_1.EndPoint(0), 9, 3],
+            [new full_mirror_1.FullMirror(game_object_1.Direction.Down), 3, 3],
+            [new full_mirror_1.FullMirror(game_object_1.Direction.Down), 6, 6],
+            [new half_mirror_1.HalfMirror(game_object_1.Direction.Down), 3, 6],
         ],
     };
 }
@@ -170,10 +363,10 @@ function levels() {
     return {
         quantum_particle: true,
         objects: [
-            [new start_block_1.StartPoint(game_object_1.Direction.Up), 3, 8],
-            [new half_mirror_1.HalfMirror(game_object_1.Direction.Down), 3, 6],
-            [new start_block_1.StartPoint(game_object_1.Direction.Up), 6, 8],
-            [new half_mirror_1.HalfMirror(game_object_1.Direction.Left), 6, 6],
+            [new start_block_1.StartPoint(game_object_1.Direction.Up), 3, 7],
+            [new half_mirror_1.HalfMirror(game_object_1.Direction.Down), 3, 5],
+            [new start_block_1.StartPoint(game_object_1.Direction.Up), 6, 7],
+            [new half_mirror_1.HalfMirror(game_object_1.Direction.Left), 6, 5],
         ],
     };
 }
@@ -196,8 +389,8 @@ function levels() {
     return {
         quantum_particle: true,
         objects: [
-            [new start_block_1.StartPoint(), 3, 5],
-            [new start_block_1.StartPoint(game_object_1.Direction.Up), 5, 7],
+            [new start_block_1.StartPoint(game_object_1.Direction.Right, true, true), 2, 5],
+            [new start_block_1.StartPoint(game_object_1.Direction.Up, true, true), 5, 8],
             [new half_mirror_1.HalfMirror(), 5, 5],
             [new end_block_1.EndPoint(0, game_object_1.Direction.Up), 5, 2],
             [new end_block_1.EndPoint(), 8, 5],
@@ -278,8 +471,8 @@ const game_object_1 = __webpack_require__(357);
 class EndPoint extends game_object_1.GameObject {
     constructor(expectedPercentage = 0, dir = game_object_1.Direction.Right) {
         super(dir);
-        this.actualPercentage = 0;
-        this.expectedPercentage = 0;
+        this.actualPercentage = 0; // percentage from 0 to 1
+        this.expectedPercentage = 0; // percentage from 0 to 1
         this.percentagesEqual = false;
         this.expectedPercentage = expectedPercentage / 100;
     }
@@ -321,7 +514,8 @@ class EndPoint extends game_object_1.GameObject {
             this.calcNewPercentage();
         }
         if (this.expectedPercentage > 0 &&
-            this.actualPercentage == this.expectedPercentage) {
+            this.actualPercentage >= this.expectedPercentage - 0.05 &&
+            this.actualPercentage <= this.expectedPercentage + 0.05) {
             this.percentagesEqual = true;
         }
     }
@@ -329,12 +523,12 @@ class EndPoint extends game_object_1.GameObject {
         this.counter = counter;
         this.index = index;
     }
-    addToCounter() {
+    addToCounter(weight) {
         if (this.counter[this.index]) {
-            this.counter[this.index]++;
+            this.counter[this.index] += weight;
         }
         else {
-            this.counter[this.index] = 1;
+            this.counter[this.index] = weight;
         }
     }
     calcNewPercentage() {
@@ -483,12 +677,14 @@ const start_block_1 = __webpack_require__(461);
 class GameGrid {
     constructor() {
         this.gridSize = 10;
+        this.multiStartpoint = [];
         //TODO: maybe anders, maybe auch einfach nicht
         this.is_drag = false;
         this.potentialInterferenceParticles = [];
         this.endpointCounter = {};
         this.endpointNum = 0;
         this.currentScale = 1;
+        this.addParticleWithSuperposition = false;
         //adds the direction to the index_array
         this.idxCalc = (arr, dir) => arr.map((num, idx) => num + dir[idx]);
         //checks if the index_array has indexes that are out of bounds
@@ -503,9 +699,7 @@ class GameGrid {
     draw(p) {
         p.push();
         //draw laser beam
-        if (this.start) {
-            this.beam_loop_start(p);
-        }
+        this.beam_loop_start(p);
         //draw fields with objects
         this.grid.forEach((row, y_idx) => row.forEach((field_tile, x_idx) => field_tile.draw(p, x_idx, y_idx)));
         //draw particles
@@ -515,27 +709,28 @@ class GameGrid {
         }
         p.pop();
     }
-    // private multiStartpoint: { start: StartPoint; x: number; y: number }[] = [];
     //particle handling
     addParticle(p, particleType, interferenceParams) {
-        if (!this.start) {
-            return;
-        }
-        const [x, y] = field_tile_1.FieldTile.calc_middle_of_tile(p, this.startX, this.startY, this.gridSize);
-        let particle;
-        switch (particleType) {
-            case particle_1.ParticleTypes.Quantum:
-                particle = new quantum_particle_1.QuantumParticle(x, y, this.start.direction);
-                break;
-            case particle_1.ParticleTypes.Normal:
-                particle = new normal_particle_1.NormalParticle(x, y, this.start.direction);
-                break;
-            case particle_1.ParticleTypes.Interference:
-                particle = new interference_particle_1.InterferenceParticle(interferenceParams.x, interferenceParams.y, interferenceParams.dir, interferenceParams.destructive, interferenceParams.phase);
-                break;
-        }
-        particle.setScale(this.currentScale);
-        this.particles.push(particle);
+        this.multiStartpoint.forEach(({ start, x, y }) => {
+            const [x_idx, y_idx] = field_tile_1.FieldTile.calc_middle_of_tile(p, x, y, this.gridSize);
+            let particle;
+            switch (particleType) {
+                case particle_1.ParticleTypes.Quantum:
+                    particle = new quantum_particle_1.QuantumParticle(x_idx, y_idx, start.direction);
+                    if (this.addParticleWithSuperposition) {
+                        particle.setSuperposition(true);
+                    }
+                    break;
+                case particle_1.ParticleTypes.Normal:
+                    particle = new normal_particle_1.NormalParticle(x_idx, y_idx, start.direction);
+                    break;
+                case particle_1.ParticleTypes.Interference:
+                    particle = new interference_particle_1.InterferenceParticle(interferenceParams.x, interferenceParams.y, interferenceParams.dir, interferenceParams.destructive, interferenceParams.phase, interferenceParams.weight);
+                    break;
+            }
+            particle.setScale(this.currentScale);
+            this.particles.push(particle);
+        });
     }
     removeParticle(particle) {
         //remove particle
@@ -578,7 +773,7 @@ class GameGrid {
                     //end_point
                     const obj = this.grid[y_idx][x_idx].get_object();
                     if (obj instanceof end_block_1.EndPoint && !particle.isNoDraw()) {
-                        obj.addToCounter();
+                        obj.addToCounter(particle.getWeight());
                     }
                     this.removeParticle(particle);
                 }
@@ -594,11 +789,14 @@ class GameGrid {
                     const mirror = this.grid[y_idx][x_idx].get_object();
                     if (particle instanceof quantum_particle_1.QuantumParticle) {
                         particle.setSuperposition(true); // goes straight ahead
+                        const newWeight = particle.getWeight() / 2;
+                        particle.setWeight(newWeight);
                         const shift_phase = mirror.checkPhaseShift(particle.getDirection());
                         const new_particle = new quantum_particle_1.QuantumParticle(x, y, new_dirs.pop()); //gets mirrored
                         new_particle.setSuperposition(true);
                         new_particle.setPhase(shift_phase ? !particle.getPhase() : particle.getPhase());
                         new_particle.setScale(this.currentScale);
+                        new_particle.setWeight(newWeight);
                         this.particles.push(new_particle);
                         this.potentialInterferenceParticles.push(new_particle);
                     }
@@ -630,6 +828,7 @@ class GameGrid {
                     dir: testee.getDirection(),
                     destructive: testee.getPhase() != interfered.getPhase(),
                     phase: testee.getPhase(),
+                    weight: interfered.getWeight() * 2,
                 });
                 //removing the particles causes issues, so dont draw them instead, until they are removed automatically
                 testee.dontDraw();
@@ -640,7 +839,8 @@ class GameGrid {
     }
     checkNextLevel() {
         let isNext = true;
-        this.endpoints.forEach((endpoint) => {
+        this.endpoints.forEach((endpoint, index) => {
+            console.log(`${isNext}, ${endpoint.getPercentageEqual()}, ${index}`);
             isNext = isNext && endpoint.getPercentageEqual();
         });
         return isNext;
@@ -691,8 +891,10 @@ class GameGrid {
         this.grid[this.dragY][this.dragX].change_object(this.grid[end_y][end_x].get_object());
         this.grid[end_y][end_x].change_object(tmp);
         if (tmp instanceof start_block_1.StartPoint) {
-            this.startX = end_x;
-            this.startY = end_y;
+            // this.startX = end_x;
+            // this.startY = end_y;
+            const idx = this.multiStartpoint.findIndex(({ start }) => tmp == start);
+            this.multiStartpoint[idx] = { start: tmp, x: end_x, y: end_y };
         }
         this.is_drag = false;
         // this.grid[end_y][end_x].set_dragged(false);
@@ -710,24 +912,31 @@ class GameGrid {
         if (end_x === this.dragX && end_y === this.dragY) {
             return;
         }
+        const dragged_obj = this.grid[this.dragY][this.dragX].get_object();
+        if (dragged_obj instanceof start_block_1.StartPoint) {
+            const idx = this.multiStartpoint.findIndex(({ start }) => dragged_obj == start);
+            this.multiStartpoint[idx] = {
+                start: dragged_obj,
+                x: end_x,
+                y: end_y,
+            };
+        }
         //swap dragged object with target object
         const tmp = this.grid[end_y][end_x].get_object();
         if (!(tmp instanceof game_object_1.BaseObject)) {
             return;
         }
-        this.grid[end_y][end_x].change_object(this.grid[this.dragY][this.dragX].get_object());
+        this.grid[end_y][end_x].change_object(dragged_obj);
         this.grid[this.dragY][this.dragX].change_object(tmp);
-        if (tmp instanceof start_block_1.StartPoint) {
-            this.startX = end_x;
-            this.startY = end_y;
-        }
         this.grid[end_y][end_x].set_dragged(true);
         this.grid[this.dragY][this.dragX].set_dragged(false);
         [this.dragX, this.dragY] = [end_x, end_y];
     }
     //handling of the laser beams
     beam_loop_start(p) {
-        this.beam_loop([this.startX, this.startY], this.start.getDirections().pop(), p);
+        this.multiStartpoint.forEach(({ start, x, y }) => {
+            this.beam_loop([x, y], start.getDirections().pop(), p);
+        });
     }
     beam_loop(startpoint, dir, p) {
         let idx_arr = [...startpoint];
@@ -781,9 +990,8 @@ class GameGrid {
     add_game_object(obj, x_idx, y_idx) {
         this.grid[y_idx][x_idx].change_object(obj);
         if (obj instanceof start_block_1.StartPoint) {
-            this.start = obj;
-            this.startX = x_idx;
-            this.startY = y_idx;
+            this.multiStartpoint.push({ start: obj, x: x_idx, y: y_idx });
+            this.addParticleWithSuperposition = obj.addWithSuperposition; //for interference tutorial
         }
         if (obj instanceof end_block_1.EndPoint) {
             obj.setCounter(this.endpointCounter, this.endpointNum++);
@@ -804,7 +1012,8 @@ class GameGrid {
         return this.currentScale;
     }
     clearGrid() {
-        this.start = null;
+        // this.start = null;
+        this.multiStartpoint = [];
         this.clearParticles();
         this.endpointNum = 0;
         this.endpoints = [];
@@ -930,7 +1139,8 @@ class GameObjectPopup {
         this.dvi1.addClass("popup-size");
         this.div2.addClass("popup-size");
         this.div3.addClass("popup-size");
-        const button1 = p.createButton("FM");
+        // full mirror button
+        const button1 = p.createButton("");
         button1.mouseClicked(() => {
             gameGrid.add_game_object(new full_mirror_1.FullMirror(), this.x, this.y);
             this.hide();
@@ -938,15 +1148,30 @@ class GameObjectPopup {
         button1.style("width", "50%");
         button1.style("height", "50%");
         button1.parent(this.div3);
-        const button2 = p.createButton("HM");
+        let img = document.createElement('img');
+        img.src = "/res/images/models/fullmirror.png";
+        img.alt = "FM";
+        img.style.maxWidth = "100%";
+        button1.child(img);
+        //half mirror button
+        const button2 = p.createButton("");
         button2.mouseClicked(() => {
             gameGrid.add_game_object(new half_mirror_1.HalfMirror(), this.x, this.y);
             this.hide();
+            // if (!(p.isLooping())) {
+            //   p.redraw();
+            // }
         });
         button2.style("width", "50%");
         button2.style("height", "50%");
         button2.parent(this.div3);
-        const button3 = p.createButton("SP");
+        img = document.createElement('img');
+        img.src = "/res/images/models/halfmirror.png";
+        img.alt = "HM";
+        img.style.maxWidth = "100%";
+        button2.child(img);
+        //startpoint button
+        const button3 = p.createButton("");
         button3.mouseClicked(() => {
             gameGrid.add_game_object(new start_block_1.StartPoint(), this.x, this.y);
             this.hide();
@@ -954,7 +1179,13 @@ class GameObjectPopup {
         button3.style("width", "50%");
         button3.style("height", "50%");
         button3.parent(this.div3);
-        const button4 = p.createButton("EP");
+        img = document.createElement('img');
+        img.src = "/res/images/models/startpoint.png";
+        img.alt = "SP";
+        img.style.maxWidth = "100%";
+        button3.child(img);
+        //endpoint button
+        const button4 = p.createButton("");
         button4.mouseClicked(() => {
             gameGrid.add_game_object(new end_block_1.EndPoint(), this.x, this.y);
             this.hide();
@@ -962,6 +1193,11 @@ class GameObjectPopup {
         button4.style("width", "50%");
         button4.style("height", "50%");
         button4.parent(this.div3);
+        img = document.createElement('img');
+        img.src = "/res/images/models/endpoint.png";
+        img.alt = "EP";
+        img.style.maxWidth = "100%";
+        button4.child(img);
         this.hide();
     }
     hide() {
@@ -974,7 +1210,6 @@ class GameObjectPopup {
         this.y = y;
         const { width, height } = this.dvi1.size();
         this.dvi1.position(mid_x - width / 2, mid_y - height / 2);
-        console.log(this.dvi1.position());
         this.shown = true;
     }
     windowResized(p) {
@@ -1147,7 +1382,7 @@ exports.InterferenceParticle = void 0;
 const game_object_1 = __webpack_require__(357);
 const particle_1 = __webpack_require__(893);
 class InterferenceParticle extends particle_1.Particle {
-    constructor(x, y, dir = game_object_1.Direction.Right, destructive, phase) {
+    constructor(x, y, dir = game_object_1.Direction.Right, destructive, phase, weight) {
         super();
         this.size = 30;
         this.phase_shifted = false;
@@ -1160,6 +1395,7 @@ class InterferenceParticle extends particle_1.Particle {
         this.direction = dir;
         this.destructive = destructive;
         this.phase_shifted = phase;
+        this.weight = destructive ? 0 : weight;
     }
     draw(p) {
         if (this.isNoDraw()) {
@@ -1361,9 +1597,16 @@ var ParticleTypes;
 class Particle {
     constructor() {
         this.scale = 1;
+        this.weight = 1;
     }
     setScale(scale) {
         this.scale = scale;
+    }
+    getWeight() {
+        return this.weight;
+    }
+    setWeight(newWeight) {
+        this.weight = newWeight;
     }
     //TODO: try to scale the speed/move better
     move() {
@@ -1439,7 +1682,8 @@ class QuantumParticle extends particle_1.Particle {
         else {
             p.stroke(255, 0, 0);
         }
-        p.bezier(-x, 0, 0, y * -2, 0, y * 2, x, 0);
+        const bezierY = y * 2 * (this.weight * 1.2);
+        p.bezier(-x, 0, 0, -bezierY, 0, bezierY, x, 0);
         if (this.superposition) {
             this.spin += 360 / 60;
             p.stroke(255, 0, 0);
@@ -1507,10 +1751,17 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StartPoint = void 0;
 const game_object_1 = __webpack_require__(357);
 class StartPoint extends game_object_1.GameObject {
-    constructor(dir = game_object_1.Direction.Right) {
+    constructor(dir = game_object_1.Direction.Right, hidden = false, addWithSuperposition = false) {
         super(dir);
+        this.hidden = false;
+        this.addWithSuperposition = false;
+        this.hidden = hidden;
+        this.addWithSuperposition = addWithSuperposition;
     }
     draw(p) {
+        if (this.hidden) {
+            return;
+        }
         p.push();
         p.fill(255, 255, 0);
         p.stroke(255);
@@ -1656,6 +1907,14 @@ class SpiegelDemo {
                 levelSelect.option("Sandbox");
                 levelSelect.option("Level 1");
                 levelSelect.option("Level 2");
+                levelSelect.option("Level 3");
+                levelSelect.option("Level 4");
+                levelSelect.option("Level 5");
+                levelSelect.option("Level 6");
+                levelSelect.option("Level 7");
+                levelSelect.option("Level 8");
+                levelSelect.option("Level 9");
+                // levelSelect.option("Level 10");
                 levelSelect.changed(() => __awaiter(this, void 0, void 0, function* () {
                     const level = levelSelect.value();
                     if (level == "Tutorial") {
@@ -1680,6 +1939,7 @@ class SpiegelDemo {
                 levelSelect.addClass("level-select");
                 playButton = p.createButton("Pause");
                 playButton.mousePressed(() => {
+                    // p.saveCanvas("test", "png"); //for saving image of canvas
                     if (playButton.html() === "Play") {
                         p.loop();
                         playButton.html("Pause");
@@ -1747,7 +2007,8 @@ class SpiegelDemo {
                 }
                 p.frameRate(fps);
                 p.clear(0, 0, 0, 0);
-                p.background("#334152");
+                // p.background("#334152");
+                // p.background(255, 255, 255, 1);
                 gameGrid.draw(p);
                 //counter for adding particles
                 particleCounter++;
@@ -1857,7 +2118,7 @@ exports["default"] = hybrids_1.define({
           />
         </svg>
         <div class="tutorial-card">
-          ${cardText()}
+          <div class="card-content">${cardText()}</div>
           <button
             id="previousButton"
             hidden="${activePrevious ? "" : "hidden"}"
@@ -1899,6 +2160,13 @@ exports["default"] = hybrids_1.define({
             left: ${cardX}px;
             top: ${cardY}px;
           }
+
+          .refraction_img {
+          display: flex;
+        }
+        .refraction_img > img {
+          max-width: 50%
+        }
         }
         @media screen and (max-width: 1000px) {
           .tutorial-card {
@@ -1911,16 +2179,24 @@ exports["default"] = hybrids_1.define({
             justify-content: center;
             align-items: end;
           }
+
+          .card-content {
+          width: auto;
+          height: 75%;
+          overflow-y: scroll;
+        }
+        
         }
 
         .tutorial-card {
           background: #009b91;
           color: white;
           font-family: "Arial";
+          border-radius: 1em;
+          overflow: hidden;
 
           position: absolute;
 
-          border-radius: 1em;
 
           transition: left 2s, top 2s, width 2s, height 2s;
         }
@@ -2011,7 +2287,7 @@ class Tutorial {
         this.canvas = canvas;
         this.p = p;
         this.gridSize = gridSize;
-        this.idxTutorialStep = 13;
+        this.idxTutorialStep = 0;
         this.currentTutorialStep = tutorial_steps[this.idxTutorialStep];
         this.loadLevelCallback = loadLevelCallBack;
         //initialize overlay
@@ -2078,6 +2354,7 @@ const tutorial_steps = [
         cardY: 100,
         cardWidth: 300,
         cardHeight: 200,
+        loadLevel: "tutorial",
         html: hybrids_1.html `
       <h3>Welcome to the tutorial</h3>
       <p>
@@ -2251,6 +2528,7 @@ const tutorial_steps = [
         cardY: 150,
         cardWidth: 350,
         cardHeight: 350,
+        loadLevel: "tutorial_sub_normal",
         html: hybrids_1.html `
       <h3>Normal Particles</h3>
       <p>
@@ -2325,8 +2603,8 @@ const tutorial_steps = [
       <p>
         Well, actually it goes into Superposition. Superposition? Superposition
         is probably the most famous quantum mechanical effect, with a plethora
-        of visualizations like Schrödingers cat. But it is also the hardest to
-        grasp nad gives you headaches, because it defies the human intuition.
+        of examples like Schrödingers cat. But it is also the hardest to grasp
+        nad gives you headaches, because it defies the human intuition.
       </p>
       <p>
         When the Quantum particle hits the Halfmirror and goes into
@@ -2345,6 +2623,36 @@ const tutorial_steps = [
         will go a bit further and look at one more quantum mechanical effect.
         The Interference.
       </p>
+    `,
+    },
+    {
+        objectX: 5,
+        objectY: 6,
+        circleScale: 3,
+        cardX: 50,
+        cardY: 200,
+        cardWidth: 400,
+        cardHeight: 320,
+        loadLevel: "tutorial_sub2",
+        html: hybrids_1.html `
+      <h3>Quantum Particles: Amplitude</h3>
+      <p>Before looking at Interference, we will look at another effect.</p>
+      <p>
+        Wwhen the particle hits the half mirror and goes into Superposition, the
+        wave property of the particle is also gets afftected in another way.
+      </p>
+      <p>
+        The Amplitude of the wave gets halfed. This means that the intensity of
+        the particle gets halfed.
+      </p>
+      <p>
+        This is one of the few effects that you can directly see in reality.
+        When light gets split by a half mirror, you can visibly see that the two
+        outgoing light beams are dimmer than the original. This correlates with
+        the amplitude/intensity of the particles getting halfed by the
+        halfmirror.
+      </p>
+      <p>Next we will look the quantum mechanical effect of Interference.</p>
     `,
     },
     {
@@ -2386,9 +2694,9 @@ const tutorial_steps = [
         objectY: 6.5,
         circleScale: 1.5,
         cardX: 150,
-        cardY: 50,
+        cardY: 25,
         cardWidth: 700,
-        cardHeight: 450,
+        cardHeight: 475,
         html: hybrids_1.html `
       <h3>Quantum Particles: Halfmirror</h3>
       <p>
@@ -2397,10 +2705,14 @@ const tutorial_steps = [
         The refractive index basically describes how much the light will bend
         when entering that medium (like when the light bends, when entering
         water). In our case the glass on one side of the has a higher refractive
-        index, than the air on the other side of the mirror. low index -> high
-        index : phase shift high index -> low index : no phase shift *insert
-        picture*
+        index, than the air on the other side of the mirror. <br />
+        low index -> high index : phase shift <br />
+        high index -> low index : no phase shift
       </p>
+      <div class="refraction_img">
+        <img src="/res/images/refraction_shift.png" />
+        <img src="/res/images/refraction_noshift.png" />
+      </div>
     `,
     },
     {
@@ -13578,6 +13890,20 @@ var map = {
 	"./level1.ts": 551,
 	"./level2": 661,
 	"./level2.ts": 661,
+	"./level3": 532,
+	"./level3.ts": 532,
+	"./level4": 216,
+	"./level4.ts": 216,
+	"./level5": 785,
+	"./level5.ts": 785,
+	"./level6": 877,
+	"./level6.ts": 877,
+	"./level7": 979,
+	"./level7.ts": 979,
+	"./level8": 653,
+	"./level8.ts": 653,
+	"./level9": 706,
+	"./level9.ts": 706,
 	"./tutorial": 733,
 	"./tutorial.ts": 733,
 	"./tutorial_sub1": 883,

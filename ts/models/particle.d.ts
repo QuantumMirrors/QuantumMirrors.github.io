@@ -14,6 +14,9 @@ export declare abstract class Particle {
     abstract isNoDraw(): boolean;
     protected scale: number;
     setScale(scale: number): void;
+    protected weight: number;
+    getWeight(): number;
+    setWeight(newWeight: number): void;
     protected x: number;
     protected y: number;
     protected direction: Direction;

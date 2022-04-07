@@ -11,7 +11,7 @@ export declare class EndPoint extends GameObject {
     setCounter(counter: {
         [index: number]: number;
     }, index: number): void;
-    addToCounter(): void;
+    addToCounter(weight: number): void;
     private calcNewPercentage;
     getPercentageEqual(): boolean;
     getDirections(): Direction[];

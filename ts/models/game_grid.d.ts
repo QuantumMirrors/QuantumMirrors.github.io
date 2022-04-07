@@ -4,9 +4,7 @@ import { Particle, ParticleTypes } from "./particle";
 export declare class GameGrid {
     private grid;
     gridSize: number;
-    private start;
-    private startX;
-    private startY;
+    private multiStartpoint;
     private is_drag;
     private dragX;
     private dragY;
@@ -16,6 +14,7 @@ export declare class GameGrid {
     private endpointCounter;
     private endpointNum;
     private currentScale;
+    private addParticleWithSuperposition;
     constructor();
     draw(p: p5): void;
     addParticle(p: p5, particleType: ParticleTypes, interferenceParams?: {
@@ -24,6 +23,7 @@ export declare class GameGrid {
         dir: Direction;
         destructive: boolean;
         phase: boolean;
+        weight: number;
     }): void;
     removeParticle(particle: Particle): void;
     private drawParticles;
