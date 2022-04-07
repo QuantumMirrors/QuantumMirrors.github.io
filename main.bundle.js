@@ -840,7 +840,7 @@ class GameGrid {
     checkNextLevel() {
         let isNext = true;
         this.endpoints.forEach((endpoint, index) => {
-            console.log(`${isNext}, ${endpoint.getPercentageEqual()}, ${index}`);
+            // console.log(`${isNext}, ${endpoint.getPercentageEqual()}, ${index}`);
             isNext = isNext && endpoint.getPercentageEqual();
         });
         return isNext;
