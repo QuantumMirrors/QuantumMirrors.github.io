@@ -27,6 +27,8 @@ export class GameGrid {
   private particles: Particle[];
   private potentialInterferenceParticles: QuantumParticle[] = [];
 
+  private endpoints: EndPoint[];
+
   private endpointCounter = {};
   private endpointNum = 0;
 
@@ -59,6 +61,8 @@ export class GameGrid {
 
     p.pop();
   }
+
+  // private multiStartpoint: { start: StartPoint; x: number; y: number }[] = [];
 
   //particle handling
   addParticle(
@@ -233,6 +237,15 @@ export class GameGrid {
     });
 
     this.potentialInterferenceParticles = [];
+  }
+
+  checkNextLevel() {
+    let isNext = true;
+    this.endpoints.forEach((endpoint) => {
+      isNext = isNext && endpoint.getPercentageEqual();
+    });
+
+    return isNext;
   }
 
   //handling of clicking and dragging in the grid
@@ -449,6 +462,7 @@ export class GameGrid {
 
     if (obj instanceof EndPoint) {
       obj.setCounter(this.endpointCounter, this.endpointNum++);
+      this.endpoints.push(obj);
     }
 
     obj.setScale(this.currentScale);
@@ -474,6 +488,7 @@ export class GameGrid {
     this.start = null;
     this.clearParticles();
     this.endpointNum = 0;
+    this.endpoints = [];
     this.grid = [];
     for (let index = 0; index < this.gridSize; index++) {
       let temp_row: FieldTile[] = [];

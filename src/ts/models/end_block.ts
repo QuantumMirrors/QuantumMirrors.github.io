@@ -6,6 +6,7 @@ export class EndPoint extends GameObject {
   private index: number;
   private actualPercentage = 0;
   private expectedPercentage = 0;
+  private percentagesEqual = false;
 
   constructor(expectedPercentage = 0, dir = Direction.Right) {
     super(dir);
@@ -79,8 +80,11 @@ export class EndPoint extends GameObject {
       this.calcNewPercentage();
     }
 
-    if(this.expectedPercentage > 0 && this.actualPercentage == this.expectedPercentage){
-      //trigger next level
+    if (
+      this.expectedPercentage > 0 &&
+      this.actualPercentage == this.expectedPercentage
+    ) {
+      this.percentagesEqual = true;
     }
   }
 
@@ -100,6 +104,10 @@ export class EndPoint extends GameObject {
   private calcNewPercentage() {
     const sum = Object.values(this.counter).reduce((prev, cur) => prev + cur);
     this.actualPercentage = this.counter[this.index] / sum;
+  }
+
+  getPercentageEqual(){
+    return this.percentagesEqual;
   }
 
   getDirections(): Direction[] {

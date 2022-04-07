@@ -19,10 +19,13 @@ export class SpiegelDemo {
     let particleCounter = 0;
     let levelSelect: any; // doesnt work with p5.Element
     let playButton: p5.Element;
+    let nextLevelButton: p5.Element;
     let particleChooser: any; // doesnt work with p5.Element
 
     let tutorial: Tutorial;
     let welcome: WelcomeScreen;
+
+    let loadedLevelNumber = 0;
 
     let is_drag = false;
 
@@ -80,8 +83,8 @@ export class SpiegelDemo {
         gameGrid.setNewScale(size / 1000);
 
         gameObjectPopup.windowResized(p);
+        nextLevelButton.style("top", `${size}px`);
       };
-      p.windowResized();
 
       p.angleMode(p.DEGREES);
       p.rectMode(p.CENTER);
@@ -105,6 +108,7 @@ export class SpiegelDemo {
             canvas,
             p,
             gameGrid.gridSize,
+            loadLevel,
             () => {
               levelSelect.selected("Level 1");
               loadLevel("level1");
@@ -122,7 +126,7 @@ export class SpiegelDemo {
           await loadLevel(`level${level.slice(-1)}`);
         }
       });
-      levelSelect.addClass("level-select")
+      levelSelect.addClass("level-select");
 
       playButton = p.createButton("Pause");
       playButton.mousePressed(() => {
@@ -134,7 +138,17 @@ export class SpiegelDemo {
           playButton.html("Play");
         }
       });
-      playButton.addClass("play-btn")
+      playButton.addClass("play-btn");
+
+      nextLevelButton = p.createButton("Next Level");
+      nextLevelButton.mouseClicked(() => {
+        loadedLevelNumber++;
+        levelSelect.selected(`Level ${loadedLevelNumber}`);
+        loadLevel(`level${loadedLevelNumber}`);
+        nextLevelButton.hide();
+      });
+      nextLevelButton.addClass("next-btn");
+      nextLevelButton.hide();
 
       particleChooser = p.createCheckbox("", true);
       particleChooser.changed(() => gameGrid.clearParticles());
@@ -163,9 +177,11 @@ export class SpiegelDemo {
         canvas,
         p,
         gameGrid.gridSize,
+        loadLevel,
         () => {
           levelSelect.selected("Level 1");
           loadLevel("level1");
+          loadedLevelNumber = 1;
           tutorial.remove();
         },
         () => {
@@ -176,6 +192,7 @@ export class SpiegelDemo {
         () => {
           levelSelect.selected("Level 1");
           loadLevel("level1");
+          loadedLevelNumber = 1;
           welcome.remove();
         },
         () => {
@@ -185,6 +202,7 @@ export class SpiegelDemo {
       );
 
       //start welcome overlay
+      p.windowResized();
       welcome.start();
     };
 
@@ -213,15 +231,22 @@ export class SpiegelDemo {
         );
         particleCounter = 0;
       }
+
+      //check if next level button should be active
+      gameGrid.checkNextLevel()
+        ? nextLevelButton.show()
+        : nextLevelButton.hide();
     };
 
     const loadLevel = async (level: string) => {
       //load level
       gameGrid.clearGrid();
       await import(`../res/levels/${level}`).then((level) => {
+        particleChooser.checked(level.default()["quantum_particle"]);
+
         level
           .default()
-          .forEach((game_object: [GameObject, number, number]) =>
+          ["objects"].forEach((game_object: [GameObject, number, number]) =>
             gameGrid.add_game_object(...game_object)
           );
       });

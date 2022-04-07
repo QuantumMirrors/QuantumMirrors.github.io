@@ -3,7 +3,6 @@ import { EndPoint } from "./end_block";
 import { FieldTile } from "./field_tile";
 import { FullMirror } from "./full_mirror";
 import { GameGrid } from "./game_grid";
-import { GameObject } from "./game_object";
 import { HalfMirror } from "./half_mirror";
 import { StartPoint } from "./start_block";
 

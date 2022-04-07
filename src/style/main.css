@@ -61,6 +61,18 @@ body {
   font-weight: bold;
   color: white;
 }
+.next-btn {
+  border-radius: 1em;
+  border: none;
+  background: #4f46e5;
+  font-weight: bold;
+  color: white;
+  padding: 0.5em;
+  font-size: 1em;
+
+  position: absolute;
+  right: 0;
+}
 
 .level-select{
   border-radius: 1em;

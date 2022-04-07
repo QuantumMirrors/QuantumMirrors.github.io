@@ -11,9 +11,13 @@ export default function levels(): {
   return {
     quantum_particle: false,
     objects: [
-      [new StartPoint(), 0, 6],
-      [new EndPoint(0, Direction.Up), 6, 0],
+      [new StartPoint(), 1, 6],
+      [new EndPoint(0, Direction.Up), 6, 1],
+      [new EndPoint(), 8, 3],
+      [new FullMirror(), 3, 3],
       [new FullMirror(), 6, 6],
+      [new HalfMirror(), 3, 6],
+      [new HalfMirror(), 6, 3],
     ],
   };
 }
