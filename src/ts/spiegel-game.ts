@@ -99,6 +99,14 @@ export class SpiegelDemo {
       levelSelect.option("Sandbox");
       levelSelect.option("Level 1");
       levelSelect.option("Level 2");
+      levelSelect.option("Level 3");
+      levelSelect.option("Level 4");
+      levelSelect.option("Level 5");
+      levelSelect.option("Level 6");
+      levelSelect.option("Level 7");
+      levelSelect.option("Level 8");
+      levelSelect.option("Level 9");
+      // levelSelect.option("Level 10");
 
       levelSelect.changed(async () => {
         const level: string = levelSelect.value();
@@ -130,6 +138,7 @@ export class SpiegelDemo {
 
       playButton = p.createButton("Pause");
       playButton.mousePressed(() => {
+        // p.saveCanvas("test", "png"); //for saving image of canvas
         if (playButton.html() === "Play") {
           p.loop();
           playButton.html("Pause");
@@ -216,7 +225,8 @@ export class SpiegelDemo {
       p.frameRate(fps);
 
       p.clear(0, 0, 0, 0);
-      p.background("#334152");
+      // p.background("#334152");
+      // p.background(255, 255, 255, 1);
 
       gameGrid.draw(p);
 

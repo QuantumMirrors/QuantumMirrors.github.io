@@ -17,7 +17,8 @@ export class InterferenceParticle extends Particle {
     y: number,
     dir: Direction = Direction.Right,
     destructive: boolean,
-    phase: boolean
+    phase: boolean,
+    weight: number
   ) {
     super();
 
@@ -27,6 +28,8 @@ export class InterferenceParticle extends Particle {
 
     this.destructive = destructive;
     this.phase_shifted = phase;
+
+    this.weight = destructive ? 0 : weight;
   }
 
   draw(p: p5) {

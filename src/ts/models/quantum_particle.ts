@@ -38,7 +38,8 @@ export class QuantumParticle extends Particle {
       p.stroke(255, 0, 0);
     }
 
-    p.bezier(-x, 0, 0, y * -2, 0, y * 2, x, 0);
+    const bezierY = y * 2 * (this.weight * 1.2);
+    p.bezier(-x, 0, 0, -bezierY, 0, bezierY, x, 0);
 
     if (this.superposition) {
       this.spin += 360 / 60;

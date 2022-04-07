@@ -4,8 +4,8 @@ import { Direction, GameObject, getRotation } from "./game_object";
 export class EndPoint extends GameObject {
   private counter: { [index: number]: number };
   private index: number;
-  private actualPercentage = 0;
-  private expectedPercentage = 0;
+  private actualPercentage = 0; // percentage from 0 to 1
+  private expectedPercentage = 0; // percentage from 0 to 1
   private percentagesEqual = false;
 
   constructor(expectedPercentage = 0, dir = Direction.Right) {
@@ -82,7 +82,8 @@ export class EndPoint extends GameObject {
 
     if (
       this.expectedPercentage > 0 &&
-      this.actualPercentage == this.expectedPercentage
+      this.actualPercentage >= this.expectedPercentage - 0.05 &&
+      this.actualPercentage <= this.expectedPercentage + 0.05
     ) {
       this.percentagesEqual = true;
     }
@@ -93,11 +94,11 @@ export class EndPoint extends GameObject {
     this.index = index;
   }
 
-  addToCounter() {
+  addToCounter(weight: number) {
     if (this.counter[this.index]) {
-      this.counter[this.index]++;
+      this.counter[this.index] += weight;
     } else {
-      this.counter[this.index] = 1;
+      this.counter[this.index] = weight;
     }
   }
 
@@ -106,7 +107,7 @@ export class EndPoint extends GameObject {
     this.actualPercentage = this.counter[this.index] / sum;
   }
 
-  getPercentageEqual(){
+  getPercentageEqual() {
     return this.percentagesEqual;
   }
 

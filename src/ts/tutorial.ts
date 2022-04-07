@@ -31,7 +31,7 @@ export class Tutorial {
     this.canvas = canvas;
     this.p = p;
     this.gridSize = gridSize;
-    this.idxTutorialStep = 13;
+    this.idxTutorialStep = 0;
     this.currentTutorialStep = tutorial_steps[this.idxTutorialStep];
 
     this.loadLevelCallback = loadLevelCallBack;
@@ -141,6 +141,7 @@ const tutorial_steps: TutorialStep[] = [
     cardY: 100,
     cardWidth: 300,
     cardHeight: 200,
+    loadLevel: "tutorial",
     html: html`
       <h3>Welcome to the tutorial</h3>
       <p>
@@ -314,6 +315,7 @@ const tutorial_steps: TutorialStep[] = [
     cardY: 150,
     cardWidth: 350,
     cardHeight: 350,
+    loadLevel: "tutorial_sub_normal",
     html: html`
       <h3>Normal Particles</h3>
       <p>
@@ -388,8 +390,8 @@ const tutorial_steps: TutorialStep[] = [
       <p>
         Well, actually it goes into Superposition. Superposition? Superposition
         is probably the most famous quantum mechanical effect, with a plethora
-        of visualizations like Schrödingers cat. But it is also the hardest to
-        grasp nad gives you headaches, because it defies the human intuition.
+        of examples like Schrödingers cat. But it is also the hardest to grasp
+        nad gives you headaches, because it defies the human intuition.
       </p>
       <p>
         When the Quantum particle hits the Halfmirror and goes into
@@ -408,6 +410,36 @@ const tutorial_steps: TutorialStep[] = [
         will go a bit further and look at one more quantum mechanical effect.
         The Interference.
       </p>
+    `,
+  },
+  {
+    objectX: 5,
+    objectY: 6,
+    circleScale: 3,
+    cardX: 50,
+    cardY: 200,
+    cardWidth: 400,
+    cardHeight: 320,
+    loadLevel: "tutorial_sub2",
+    html: html`
+      <h3>Quantum Particles: Amplitude</h3>
+      <p>Before looking at Interference, we will look at another effect.</p>
+      <p>
+        Wwhen the particle hits the half mirror and goes into Superposition, the
+        wave property of the particle is also gets afftected in another way.
+      </p>
+      <p>
+        The Amplitude of the wave gets halfed. This means that the intensity of
+        the particle gets halfed.
+      </p>
+      <p>
+        This is one of the few effects that you can directly see in reality.
+        When light gets split by a half mirror, you can visibly see that the two
+        outgoing light beams are dimmer than the original. This correlates with
+        the amplitude/intensity of the particles getting halfed by the
+        halfmirror.
+      </p>
+      <p>Next we will look the quantum mechanical effect of Interference.</p>
     `,
   },
   {
@@ -449,9 +481,9 @@ const tutorial_steps: TutorialStep[] = [
     objectY: 6.5,
     circleScale: 1.5,
     cardX: 150,
-    cardY: 50,
+    cardY: 25,
     cardWidth: 700,
-    cardHeight: 450,
+    cardHeight: 475,
     html: html`
       <h3>Quantum Particles: Halfmirror</h3>
       <p>
@@ -460,10 +492,14 @@ const tutorial_steps: TutorialStep[] = [
         The refractive index basically describes how much the light will bend
         when entering that medium (like when the light bends, when entering
         water). In our case the glass on one side of the has a higher refractive
-        index, than the air on the other side of the mirror. low index -> high
-        index : phase shift high index -> low index : no phase shift *insert
-        picture*
+        index, than the air on the other side of the mirror. <br />
+        low index -> high index : phase shift <br />
+        high index -> low index : no phase shift
       </p>
+      <div class="refraction_img">
+        <img src="/res/images/refraction_shift.png" />
+        <img src="/res/images/refraction_noshift.png" />
+      </div>
     `,
   },
   {

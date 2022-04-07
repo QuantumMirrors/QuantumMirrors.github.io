@@ -9,13 +9,15 @@ export default function levels(): {
   objects: [GameObject, number, number][];
 } {
   return {
-    quantum_particle: true,
+    quantum_particle: false,
     objects: [
-      [new StartPoint(Direction.Right, true, true), 2, 5],
-      [new StartPoint(Direction.Up, true, true), 5, 8],
-      [new HalfMirror(), 5, 5],
-      [new EndPoint(0, Direction.Up), 5, 2],
-      [new EndPoint(), 8, 5],
+      [new StartPoint(), 1, 6],
+      [new EndPoint(50, Direction.Up), 6, 1],
+      [new EndPoint(50), 8, 3],
+      [new FullMirror(Direction.Down), 3, 3],
+      [new FullMirror(Direction.Down), 6, 6],
+      [new HalfMirror(Direction.Down), 3, 6],
+      [new HalfMirror(), 6, 3],
     ],
   };
 }

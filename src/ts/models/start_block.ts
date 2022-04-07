@@ -3,17 +3,20 @@ import { Direction, GameObject, getRotation } from "./game_object";
 
 export class StartPoint extends GameObject {
   private hidden = false;
-  constructor(dir = Direction.Right, hidden = false) {
+
+  addWithSuperposition = false;
+  constructor(dir = Direction.Right, hidden = false, addWithSuperposition = false) {
     super(dir);
 
     this.hidden = hidden;
+    this.addWithSuperposition = addWithSuperposition;
   }
 
   draw(p: p5) {
     if(this.hidden){
       return;
     }
-    
+
     p.push();
 
     p.fill(255, 255, 0);

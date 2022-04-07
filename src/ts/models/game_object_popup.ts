@@ -39,7 +39,8 @@ export class GameObjectPopup {
     this.div2.addClass("popup-size");
     this.div3.addClass("popup-size");
 
-    const button1 = p.createButton("FM");
+    // full mirror button
+    const button1 = p.createButton("");
     button1.mouseClicked(() => {
       gameGrid.add_game_object(new FullMirror(), this.x, this.y);
       this.hide();
@@ -48,16 +49,34 @@ export class GameObjectPopup {
     button1.style("height", "50%");
     button1.parent(this.div3);
 
-    const button2 = p.createButton("HM");
+    let img = document.createElement('img');
+    img.src = "/res/images/models/fullmirror.png";
+    img.alt = "FM"
+    img.style.maxWidth = "100%";
+    button1.child(img as any)
+
+
+    //half mirror button
+    const button2 = p.createButton("");
     button2.mouseClicked(() => {
       gameGrid.add_game_object(new HalfMirror(), this.x, this.y);
       this.hide();
+      // if (!(p.isLooping())) {
+      //   p.redraw();
+      // }
     });
     button2.style("width", "50%");
     button2.style("height", "50%");
     button2.parent(this.div3);
 
-    const button3 = p.createButton("SP");
+    img = document.createElement('img');
+    img.src = "/res/images/models/halfmirror.png";
+    img.alt = "HM"
+    img.style.maxWidth = "100%";
+    button2.child(img as any)
+
+    //startpoint button
+    const button3 = p.createButton("");
     button3.mouseClicked(() => {
       gameGrid.add_game_object(new StartPoint(), this.x, this.y);
       this.hide();
@@ -66,7 +85,14 @@ export class GameObjectPopup {
     button3.style("height", "50%");
     button3.parent(this.div3);
 
-    const button4 = p.createButton("EP");
+    img = document.createElement('img');
+    img.src = "/res/images/models/startpoint.png";
+    img.alt = "SP"
+    img.style.maxWidth = "100%";
+    button3.child(img as any)
+
+    //endpoint button
+    const button4 = p.createButton("");
     button4.mouseClicked(() => {
       gameGrid.add_game_object(new EndPoint(), this.x, this.y);
       this.hide();
@@ -74,6 +100,12 @@ export class GameObjectPopup {
     button4.style("width", "50%");
     button4.style("height", "50%");
     button4.parent(this.div3);
+
+    img = document.createElement('img');
+    img.src = "/res/images/models/endpoint.png";
+    img.alt = "EP"
+    img.style.maxWidth = "100%";
+    button4.child(img as any)
 
     this.hide();
   }
@@ -93,7 +125,6 @@ export class GameObjectPopup {
       height: number;
     };
     this.dvi1.position(mid_x - width / 2, mid_y - height / 2);
-    console.log(this.dvi1.position());
 
     this.shown = true;
   }

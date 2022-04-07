@@ -106,7 +106,7 @@ export default define<TutorialOverlay>({
           />
         </svg>
         <div class="tutorial-card">
-          ${cardText()}
+          <div class="card-content">${cardText()}</div>
           <button
             id="previousButton"
             hidden="${activePrevious ? "" : "hidden"}"
@@ -148,6 +148,13 @@ export default define<TutorialOverlay>({
             left: ${cardX}px;
             top: ${cardY}px;
           }
+
+          .refraction_img {
+          display: flex;
+        }
+        .refraction_img > img {
+          max-width: 50%
+        }
         }
         @media screen and (max-width: 1000px) {
           .tutorial-card {
@@ -160,16 +167,24 @@ export default define<TutorialOverlay>({
             justify-content: center;
             align-items: end;
           }
+
+          .card-content {
+          width: auto;
+          height: 75%;
+          overflow-y: scroll;
+        }
+        
         }
 
         .tutorial-card {
           background: #009b91;
           color: white;
           font-family: "Arial";
+          border-radius: 1em;
+          overflow: hidden;
 
           position: absolute;
 
-          border-radius: 1em;
 
           transition: left 2s, top 2s, width 2s, height 2s;
         }

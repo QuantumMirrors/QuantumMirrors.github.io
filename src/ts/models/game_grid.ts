@@ -31,6 +31,8 @@ export class GameGrid {
 
   private currentScale = 1;
 
+  private addParticleWithSuperposition = false;
+
   constructor() {
     //initialize grid
     this.clearGrid();
@@ -67,6 +69,7 @@ export class GameGrid {
       dir: Direction;
       destructive: boolean;
       phase: boolean;
+      weight: number;
     }
   ) {
     this.multiStartpoint.forEach(({ start, x, y }) => {
@@ -81,6 +84,9 @@ export class GameGrid {
       switch (particleType) {
         case ParticleTypes.Quantum:
           particle = new QuantumParticle(x_idx, y_idx, start.direction);
+          if (this.addParticleWithSuperposition) {
+            (particle as QuantumParticle).setSuperposition(true);
+          }
           break;
         case ParticleTypes.Normal:
           particle = new NormalParticle(x_idx, y_idx, start.direction);
@@ -91,7 +97,8 @@ export class GameGrid {
             interferenceParams.y,
             interferenceParams.dir,
             interferenceParams.destructive,
-            interferenceParams.phase
+            interferenceParams.phase,
+            interferenceParams.weight
           );
           break;
       }
@@ -154,7 +161,7 @@ export class GameGrid {
           //end_point
           const obj = this.grid[y_idx][x_idx].get_object();
           if (obj instanceof EndPoint && !particle.isNoDraw()) {
-            obj.addToCounter();
+            obj.addToCounter(particle.getWeight());
           }
 
           this.removeParticle(particle);
@@ -171,6 +178,8 @@ export class GameGrid {
 
           if (particle instanceof QuantumParticle) {
             particle.setSuperposition(true); // goes straight ahead
+            const newWeight = particle.getWeight() / 2;
+            particle.setWeight(newWeight);
 
             const shift_phase = mirror.checkPhaseShift(particle.getDirection());
 
@@ -180,6 +189,7 @@ export class GameGrid {
               shift_phase ? !particle.getPhase() : particle.getPhase()
             );
             new_particle.setScale(this.currentScale);
+            new_particle.setWeight(newWeight);
 
             this.particles.push(new_particle);
             this.potentialInterferenceParticles.push(new_particle);
@@ -219,6 +229,7 @@ export class GameGrid {
           dir: testee.getDirection(),
           destructive: testee.getPhase() != interfered.getPhase(),
           phase: testee.getPhase(),
+          weight: interfered.getWeight() * 2,
         });
 
         //removing the particles causes issues, so dont draw them instead, until they are removed automatically
@@ -232,9 +243,13 @@ export class GameGrid {
 
   checkNextLevel() {
     let isNext = true;
-    this.endpoints.forEach((endpoint) => {
+
+    this.endpoints.forEach((endpoint, index) => {
+      console.log(`${isNext}, ${endpoint.getPercentageEqual()}, ${index}`);
+      
       isNext = isNext && endpoint.getPercentageEqual();
     });
+
 
     return isNext;
   }
@@ -356,15 +371,6 @@ export class GameGrid {
     this.grid[end_y][end_x].change_object(dragged_obj);
     this.grid[this.dragY][this.dragX].change_object(tmp);
 
-    console.log(tmp);
-
-    // if (tmp instanceof StartPoint) {
-    //   const idx = this.multiStartpoint.findIndex(({ start }) => tmp == start);
-    //   const test = this.multiStartpoint[idx];
-    //   console.log({test, end_x, end_y});
-
-    //   this.multiStartpoint[idx] = { start: tmp, x: this.dragX, y: this.dragY };
-    // }
     this.grid[end_y][end_x].set_dragged(true);
     this.grid[this.dragY][this.dragX].set_dragged(false);
 
@@ -462,11 +468,8 @@ export class GameGrid {
   add_game_object(obj: GameObject, x_idx: number, y_idx: number) {
     this.grid[y_idx][x_idx].change_object(obj);
     if (obj instanceof StartPoint) {
-      // this.start = obj;
-      // this.startX = x_idx;
-      // this.startY = y_idx;
-
       this.multiStartpoint.push({ start: obj, x: x_idx, y: y_idx });
+      this.addParticleWithSuperposition = obj.addWithSuperposition; //for interference tutorial
     }
 
     if (obj instanceof EndPoint) {

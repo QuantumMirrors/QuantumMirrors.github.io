@@ -20,6 +20,14 @@ export abstract class Particle {
     this.scale = scale;
   }
 
+  protected weight = 1;
+  getWeight(){
+    return this.weight;
+  }
+  setWeight(newWeight: number){
+    this.weight = newWeight;
+  }
+
   protected x: number;
   protected y: number;
   protected direction: Direction;
