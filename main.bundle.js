@@ -16,7 +16,7 @@ const jquery_1 = __importDefault(__webpack_require__(961));
 __webpack_require__(317);
 __webpack_require__(247);
 if (jquery_1.default("#mirror-game").length) {
-    const spiegeldemo = new spiegel_game_1.SpiegelDemo();
+    const spiegeldemo = new spiegel_game_1.MirrorGame();
     new p5_1.default(spiegeldemo.game());
 }
 
@@ -1822,13 +1822,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SpiegelDemo = void 0;
+exports.MirrorGame = void 0;
 const game_grid_1 = __webpack_require__(580);
 const game_object_popup_1 = __webpack_require__(404);
 const particle_1 = __webpack_require__(893);
 const tutorial_1 = __webpack_require__(884);
 const welcomescreen_1 = __webpack_require__(102);
-class SpiegelDemo {
+class MirrorGame {
     constructor() {
         this.sketch = (p) => {
             let canvas;
@@ -1900,7 +1900,7 @@ class SpiegelDemo {
                 p.rectMode(p.CENTER);
                 p.frameRate(60);
                 //setup additional elements
-                fpsSlider = p.createSlider(1, 60, 60, 1);
+                fpsSlider = p.createSlider(1, 120, 60, 1);
                 particleSlider = p.createSlider(-10, -1, -5, 0.5); //negative, because high number == low particle count
                 levelSelect = p.createSelect();
                 levelSelect.option("Tutorial");
@@ -1919,7 +1919,7 @@ class SpiegelDemo {
                     const level = levelSelect.value();
                     if (level == "Tutorial") {
                         yield loadLevel("tutorial");
-                        tutorial = new tutorial_1.Tutorial(canvas, p, gameGrid.gridSize, loadLevel, () => {
+                        tutorial = new tutorial_1.TutorialOverlay(canvas, p, gameGrid.gridSize, loadLevel, () => {
                             levelSelect.selected("Level 1");
                             loadLevel("level1");
                             tutorial.remove();
@@ -1939,8 +1939,8 @@ class SpiegelDemo {
                 levelSelect.addClass("level-select");
                 playButton = p.createButton("Pause");
                 playButton.mousePressed(() => {
-                    // p.saveCanvas("test", "png"); //for saving image of canvas
                     if (playButton.html() === "Play") {
+                        // p.saveCanvas("test", "png"); //for saving image of canvas
                         p.loop();
                         playButton.html("Pause");
                     }
@@ -1978,7 +1978,7 @@ class SpiegelDemo {
                 levelSelect.selected("Tutorial");
                 loadLevel("tutorial");
                 //initialize overlays
-                tutorial = new tutorial_1.Tutorial(canvas, p, gameGrid.gridSize, loadLevel, () => {
+                tutorial = new tutorial_1.TutorialOverlay(canvas, p, gameGrid.gridSize, loadLevel, () => {
                     levelSelect.selected("Level 1");
                     loadLevel("level1");
                     loadedLevelNumber = 1;
@@ -1986,7 +1986,7 @@ class SpiegelDemo {
                 }, () => {
                     tutorial.remove();
                 });
-                welcome = new welcomescreen_1.WelcomeScreen(() => {
+                welcome = new welcomescreen_1.WelcomeScreenOverlay(() => {
                     levelSelect.selected("Level 1");
                     loadLevel("level1");
                     loadedLevelNumber = 1;
@@ -2038,7 +2038,7 @@ class SpiegelDemo {
         return this.sketch;
     }
 }
-exports.SpiegelDemo = SpiegelDemo;
+exports.MirrorGame = MirrorGame;
 
 
 /***/ }),
@@ -2278,11 +2278,11 @@ exports["default"] = hybrids_1.define({
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Tutorial = void 0;
+exports.TutorialOverlay = void 0;
 const hybrids_1 = __webpack_require__(384);
 const field_tile_1 = __webpack_require__(311);
 const tutorial_component_1 = __webpack_require__(247);
-class Tutorial {
+class TutorialOverlay {
     constructor(canvas, p, gridSize, loadLevelCallBack, endTutorialCallback, endCallback) {
         this.canvas = canvas;
         this.p = p;
@@ -2345,7 +2345,7 @@ class Tutorial {
         tutorial_component_1.tut_activeButtons(this.overlay, !(this.idxTutorialStep >= tutorial_steps.length - 1), !(this.idxTutorialStep <= 0));
     }
 }
-exports.Tutorial = Tutorial;
+exports.TutorialOverlay = TutorialOverlay;
 const tutorial_steps = [
     {
         objectX: -2,
@@ -2945,9 +2945,9 @@ exports["default"] = hybrids_1.define({
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.WelcomeScreen = void 0;
+exports.WelcomeScreenOverlay = void 0;
 const welcome_component_1 = __webpack_require__(363);
-class WelcomeScreen {
+class WelcomeScreenOverlay {
     constructor(skipTutorialCallback, startTutorialCallback) {
         //initialize overlay
         this.overlay = document.createElement("welcome-overlay");
@@ -2969,7 +2969,7 @@ class WelcomeScreen {
         this.overlay.remove();
     }
 }
-exports.WelcomeScreen = WelcomeScreen;
+exports.WelcomeScreenOverlay = WelcomeScreenOverlay;
 
 
 /***/ }),

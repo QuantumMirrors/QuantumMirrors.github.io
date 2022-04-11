@@ -1,4 +1,4 @@
-export declare class WelcomeScreen {
+export declare class WelcomeScreenOverlay {
     private overlay;
     constructor(skipTutorialCallback: () => void, startTutorialCallback: () => void);
     start(): void;

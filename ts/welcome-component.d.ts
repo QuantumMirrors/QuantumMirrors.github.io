@@ -1,5 +1,5 @@
 /// <reference types="hybrids" />
-export interface WelcomeOverlay extends HTMLElement {
+export interface WelcomeCard extends HTMLElement {
     cardX: number;
     cardY: number;
     cardWidth: number;
@@ -7,5 +7,5 @@ export interface WelcomeOverlay extends HTMLElement {
     triggerUpdate: boolean;
 }
 export declare function welcome_update(host: any, cardX: number, cardY: number, cardWidth: number, cardHeight: number): void;
-declare const _default: import("hybrids").Component<WelcomeOverlay>;
+declare const _default: import("hybrids").Component<WelcomeCard>;
 export default _default;

@@ -1,5 +1,5 @@
 /// <reference types="hybrids" />
-export interface TutorialOverlay extends HTMLElement {
+export interface TutorialCard extends HTMLElement {
     circleX: number;
     circleY: number;
     cirecleSize: number;
@@ -14,5 +14,5 @@ export interface TutorialOverlay extends HTMLElement {
 export declare function tut_update(host: any, circleX: number, circleY: number, cirecleSize: number, cardX: number, cardY: number, cardWidth: number, cardHeight: number): void;
 export declare function tut_updateText(htmlText: any): void;
 export declare function tut_activeButtons(host: any, next: boolean, previous: boolean): void;
-declare const _default: import("hybrids").Component<TutorialOverlay>;
+declare const _default: import("hybrids").Component<TutorialCard>;
 export default _default;

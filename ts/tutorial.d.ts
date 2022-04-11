@@ -1,5 +1,5 @@
 import p5 from "p5";
-export declare class Tutorial {
+export declare class TutorialOverlay {
     private canvas;
     private p;
     private gridSize;
