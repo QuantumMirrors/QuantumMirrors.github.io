@@ -1,10 +1,10 @@
 import p5 from "p5";
-import { SpiegelDemo } from "./ts/spiegel-game";
+import { MirrorGame } from "./ts/spiegel-game";
 import $ from "jquery";
 import "./style/main.css";
 import "./ts/tutorial-component";
 
 if ($("#mirror-game").length) {
-  const spiegeldemo = new SpiegelDemo();
+  const spiegeldemo = new MirrorGame();
   new p5(spiegeldemo.game());
 }

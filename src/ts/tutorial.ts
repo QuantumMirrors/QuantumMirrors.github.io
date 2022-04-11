@@ -2,18 +2,18 @@ import { html, UpdateFunctionWithMethods } from "hybrids";
 import p5 from "p5";
 import { FieldTile } from "./models/field_tile";
 import {
-  TutorialOverlay,
+  TutorialCard,
   tut_activeButtons,
   tut_update,
   tut_updateText,
 } from "./tutorial-component";
 
-export class Tutorial {
+export class TutorialOverlay {
   private canvas: p5.Element;
   private p: p5;
   private gridSize: number;
 
-  private overlay: TutorialOverlay;
+  private overlay: TutorialCard;
 
   private idxTutorialStep: number;
   private currentTutorialStep: TutorialStep;
@@ -39,7 +39,7 @@ export class Tutorial {
     //initialize overlay
     this.overlay = document.createElement(
       "tutorial-overlay"
-    ) as TutorialOverlay;
+    ) as TutorialCard;
 
     this.updateOverlay();
     this.updateActiveButtons();

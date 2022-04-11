@@ -1,6 +1,6 @@
 import { define, dispatch, html } from "hybrids";
 
-export interface WelcomeOverlay extends HTMLElement {
+export interface WelcomeCard extends HTMLElement {
   // circleX: number;
   // circleY: number;
   cardX: number;
@@ -54,7 +54,7 @@ function startTutorial(host: any) {
   host.triggerUpdate = !host.triggerUpdate; //weird workaround to trigger a rerender when no other property was changed
 }
 
-export default define<WelcomeOverlay>({
+export default define<WelcomeCard>({
   tag: "welcome-overlay",
   cardX: 0,
   cardY: 0,

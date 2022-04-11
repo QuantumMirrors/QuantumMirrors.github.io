@@ -1,13 +1,12 @@
 import p5 from "p5";
-import { FieldTile } from "./models/field_tile";
 import { GameGrid } from "./models/game_grid";
 import { GameObject } from "./models/game_object";
 import { GameObjectPopup } from "./models/game_object_popup";
 import { ParticleTypes } from "./models/particle";
-import { Tutorial } from "./tutorial";
-import { WelcomeScreen } from "./welcomescreen";
+import { TutorialOverlay } from "./tutorial";
+import { WelcomeScreenOverlay } from "./welcomescreen";
 
-export class SpiegelDemo {
+export class MirrorGame {
   private sketch = (p: p5) => {
     let canvas: p5.Renderer;
 
@@ -22,8 +21,8 @@ export class SpiegelDemo {
     let nextLevelButton: p5.Element;
     let particleChooser: any; // doesnt work with p5.Element
 
-    let tutorial: Tutorial;
-    let welcome: WelcomeScreen;
+    let tutorial: TutorialOverlay;
+    let welcome: WelcomeScreenOverlay;
 
     let loadedLevelNumber = 0;
 
@@ -91,7 +90,7 @@ export class SpiegelDemo {
       p.frameRate(60);
 
       //setup additional elements
-      fpsSlider = p.createSlider(1, 60, 60, 1);
+      fpsSlider = p.createSlider(1, 120, 60, 1);
       particleSlider = p.createSlider(-10, -1, -5, 0.5); //negative, because high number == low particle count
 
       levelSelect = p.createSelect();
@@ -112,7 +111,7 @@ export class SpiegelDemo {
         const level: string = levelSelect.value();
         if (level == "Tutorial") {
           await loadLevel("tutorial");
-          tutorial = new Tutorial(
+          tutorial = new TutorialOverlay(
             canvas,
             p,
             gameGrid.gridSize,
@@ -138,8 +137,8 @@ export class SpiegelDemo {
 
       playButton = p.createButton("Pause");
       playButton.mousePressed(() => {
-        // p.saveCanvas("test", "png"); //for saving image of canvas
         if (playButton.html() === "Play") {
+          // p.saveCanvas("test", "png"); //for saving image of canvas
           p.loop();
           playButton.html("Pause");
         } else if (playButton.html() === "Pause") {
@@ -182,7 +181,7 @@ export class SpiegelDemo {
       loadLevel("tutorial");
 
       //initialize overlays
-      tutorial = new Tutorial(
+      tutorial = new TutorialOverlay(
         canvas,
         p,
         gameGrid.gridSize,
@@ -197,7 +196,7 @@ export class SpiegelDemo {
           tutorial.remove();
         }
       );
-      welcome = new WelcomeScreen(
+      welcome = new WelcomeScreenOverlay(
         () => {
           levelSelect.selected("Level 1");
           loadLevel("level1");

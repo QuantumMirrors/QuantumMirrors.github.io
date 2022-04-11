@@ -1,14 +1,14 @@
-import { WelcomeOverlay, welcome_update } from "./welcome-component";
+import { WelcomeCard, welcome_update } from "./welcome-component";
 
-export class WelcomeScreen {
-  private overlay: WelcomeOverlay;
+export class WelcomeScreenOverlay {
+  private overlay: WelcomeCard;
 
   constructor(
     skipTutorialCallback: () => void,
     startTutorialCallback: () => void
   ) {
     //initialize overlay
-    this.overlay = document.createElement("welcome-overlay") as WelcomeOverlay;
+    this.overlay = document.createElement("welcome-overlay") as WelcomeCard;
 
     // window.onresize = () => this.updateOverlay();
 

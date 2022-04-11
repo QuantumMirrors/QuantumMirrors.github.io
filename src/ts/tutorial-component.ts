@@ -1,6 +1,6 @@
 import { define, dispatch, html } from "hybrids";
 
-export interface TutorialOverlay extends HTMLElement {
+export interface TutorialCard extends HTMLElement {
   circleX: number;
   circleY: number;
   cirecleSize: number;
@@ -63,7 +63,7 @@ function endTutorial(host: any) {
   host.triggerUpdate = !host.triggerUpdate;
 }
 
-export default define<TutorialOverlay>({
+export default define<TutorialCard>({
   tag: "tutorial-overlay",
   circleX: 0,
   circleY: 0,

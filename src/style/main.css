@@ -20,6 +20,8 @@ body {
   background: #334152;
 
   font-family: "Arial";
+
+  overscroll-behavior: contain;
 }
 
 .topBar {
