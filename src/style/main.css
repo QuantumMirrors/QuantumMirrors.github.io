@@ -21,13 +21,13 @@ body {
 
   font-family: "Arial";
 
-  overscroll-behavior: contain;
-  touch-action: none;
+  
+  touch-action: pinch-zoom;
 }
 
 /* doesnt work */
 .body-no-pan{
-  touch-action: none;
+  overscroll-behavior: contain;
 }
 
 .topBar {
