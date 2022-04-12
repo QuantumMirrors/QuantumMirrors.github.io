@@ -25,7 +25,7 @@ body {
 }
 
 .body-no-pan{
-  touch-action: pinch-zoom;
+  touch-action: none;
 }
 
 .topBar {
