@@ -24,6 +24,10 @@ body {
   overscroll-behavior: contain;
 }
 
+.body-no-pan{
+  touch-action: pinch-zoom;
+}
+
 .topBar {
   height: 3em;
   width: 100%;

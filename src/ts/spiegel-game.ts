@@ -49,6 +49,8 @@ export class MirrorGame {
           if (p.mouseIsPressed) {
             is_drag = true;
             gameGrid.grid_drag_start(p);
+
+            document.getElementsByTagName("body")[0].classList.add("body-no-pan");
           }
         }, 250);
       });
@@ -70,6 +72,8 @@ export class MirrorGame {
         if (is_drag) {
           gameGrid.grid_drag_end(p);
           is_drag = false;
+
+          document.getElementsByTagName("body")[0].classList.remove("body-no-pan");
         }
       });
 
