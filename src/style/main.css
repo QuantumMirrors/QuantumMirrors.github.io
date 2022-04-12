@@ -22,8 +22,10 @@ body {
   font-family: "Arial";
 
   overscroll-behavior: contain;
+  touch-action: none;
 }
 
+/* doesnt work */
 .body-no-pan{
   touch-action: none;
 }
