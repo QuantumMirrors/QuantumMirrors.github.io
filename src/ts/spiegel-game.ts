@@ -28,14 +28,15 @@ export class MirrorGame {
 
     p.setup = () => {
       //lock screen orientation for mobile devices
-      if (p.windowHeight < 1000 || p.windowWidth < 1000) {
-        window.screen.orientation
-          .lock("portrait")
-          .then(() => console.log("lockered"))
-          .catch(() => console.log("error"));
-        console.log("locked");
-      }
-      console.log(window.screen.orientation);
+      // if (p.windowHeight < 1000 || p.windowWidth < 1000) {
+      //   window.screen.orientation
+      //     .lock("portrait")
+      //     .then(() => console.log("lockered"))
+      //     .catch(() => console.log("error"));
+      //   console.log("locked");
+      // }
+      // console.log(window.screen.orientation);
+      
       //setup canvas
       canvas = p.createCanvas(1000, 1000);
       canvas.parent("mirror-game");

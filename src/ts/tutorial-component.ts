@@ -150,16 +150,22 @@ export default define<TutorialCard>({
           }
 
           .refraction_img {
-          display: flex;
+            display: flex;
+          }
+          .refraction_img > img {
+            max-width: 50%
+          }
         }
-        .refraction_img > img {
-          max-width: 50%
-        }
+        @media screen and (max-width: 2000px) and (min-width: 1200px) {
+          .tutorial-card {
+            font-size: 0.85em;
+          }
         }
         @media screen and (max-width: 1000px) {
           .tutorial-card {
             height: 40%;
             width: 100%;
+            font-size: 1em;
           }
 
           .tutorial {
@@ -173,7 +179,7 @@ export default define<TutorialCard>({
           height: 75%;
           overflow-y: scroll;
         }
-        
+
         }
 
         .tutorial-card {
