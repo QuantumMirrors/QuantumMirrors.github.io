@@ -178,7 +178,7 @@ export default define<TutorialCard>({
           }
         }
 
-        @media screen and (max-width: 1300px) and (min-width: 850px) {
+        @media screen and (max-width: 1300px) and (min-width: 1000px) {
           .tutorial-card {
             font-size: 0.65em;
             height: ${cardHeight}px;
