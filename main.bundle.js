@@ -1837,6 +1837,12 @@ const game_object_popup_1 = __webpack_require__(404);
 const particle_1 = __webpack_require__(893);
 const tutorial_1 = __webpack_require__(884);
 const welcomescreen_1 = __webpack_require__(102);
+/**
+ * Author: Marvin Rudolph
+ * Date: 14.04.2022
+ *
+ * Note: This game was created as a bachelor thesis. You are free to use it and develop it further.
+ */
 class MirrorGame {
     constructor() {
         this.sketch = (p) => {
@@ -1854,15 +1860,6 @@ class MirrorGame {
             let welcome;
             let is_drag = false;
             p.setup = () => {
-                //lock screen orientation for mobile devices
-                // if (p.windowHeight < 1000 || p.windowWidth < 1000) {
-                //   window.screen.orientation
-                //     .lock("portrait")
-                //     .then(() => console.log("lockered"))
-                //     .catch(() => console.log("error"));
-                //   console.log("locked");
-                // }
-                // console.log(window.screen.orientation);
                 //setup canvas
                 canvas = p.createCanvas(1000, 1000);
                 canvas.parent("mirror-game");
@@ -2172,7 +2169,7 @@ exports["default"] = hybrids_1.define({
           left: 0;
         }
 
-        @media screen and (min-width: 1000px) {
+        @media screen and (min-width: 1300px) {
           .tutorial-card {
             height: ${cardHeight}px;
             width: ${cardWidth}px;
@@ -2180,16 +2177,54 @@ exports["default"] = hybrids_1.define({
             top: ${cardY}px;
           }
 
+          img {
+            max-width: 100%;
+          }
+
           .refraction_img {
             display: flex;
           }
           .refraction_img > img {
-            max-width: 50%
+            max-width: 50%;
           }
         }
         @media screen and (max-width: 2000px) and (min-width: 1200px) {
           .tutorial-card {
             font-size: 0.85em;
+          }
+
+          img {
+            max-width: 100%;
+          }
+
+          .refraction_img {
+            display: flex;
+          }
+
+          .refraction_img > img {
+            max-width: 50%;
+          }
+        }
+
+        @media screen and (max-width: 1300px) and (min-width: 850px) {
+          .tutorial-card {
+            font-size: 0.65em;
+            height: ${cardHeight}px;
+            width: ${cardWidth + cardX / 2}px;
+            left: ${cardX / 2}px;
+            top: ${cardY}px;
+          }
+
+          img {
+            max-width: 70%;
+          }
+
+          .refraction_img {
+            display: flex;
+          }
+
+          .refraction_img > img {
+            max-width: 35%;
           }
         }
         @media screen and (max-width: 1000px) {
@@ -2206,10 +2241,10 @@ exports["default"] = hybrids_1.define({
           }
 
           .card-content {
-          width: auto;
-          height: 75%;
-          overflow-y: scroll;
-        }
+            width: auto;
+            height: 75%;
+            overflow-y: scroll;
+          }
 
         }
 
@@ -2221,7 +2256,6 @@ exports["default"] = hybrids_1.define({
           overflow: hidden;
 
           position: absolute;
-
 
           transition: left 2s, top 2s, width 2s, height 2s;
         }
@@ -2257,14 +2291,16 @@ exports["default"] = hybrids_1.define({
           color: white;
         }
 
-        <!-- .tutorial-card > #endButton {
+        .tutorial-card > #endButton {
           position: absolute;
           right: 0;
           top: 0;
           color: white;
           background: none;
         }
-        -- > .tutorial-card > h1,
+
+        
+        .tutorial-card > h1,
         h2,
         h3,
         h4,
@@ -2280,15 +2316,6 @@ exports["default"] = hybrids_1.define({
           right: 0;
           width: 100%;
           height: 100%;
-        }
-
-        img {
-          max-width: 100%;
-          max-height: 100%;
-        }
-
-        .mach_img{
-          <!-- height: 20% -->
         }
       </style>
     `,
