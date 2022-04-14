@@ -1855,14 +1855,14 @@ class MirrorGame {
             let is_drag = false;
             p.setup = () => {
                 //lock screen orientation for mobile devices
-                if (p.windowHeight < 1000 || p.windowWidth < 1000) {
-                    window.screen.orientation
-                        .lock("portrait")
-                        .then(() => console.log("lockered"))
-                        .catch(() => console.log("error"));
-                    console.log("locked");
-                }
-                console.log(window.screen.orientation);
+                // if (p.windowHeight < 1000 || p.windowWidth < 1000) {
+                //   window.screen.orientation
+                //     .lock("portrait")
+                //     .then(() => console.log("lockered"))
+                //     .catch(() => console.log("error"));
+                //   console.log("locked");
+                // }
+                // console.log(window.screen.orientation);
                 //setup canvas
                 canvas = p.createCanvas(1000, 1000);
                 canvas.parent("mirror-game");
@@ -2181,16 +2181,22 @@ exports["default"] = hybrids_1.define({
           }
 
           .refraction_img {
-          display: flex;
+            display: flex;
+          }
+          .refraction_img > img {
+            max-width: 50%
+          }
         }
-        .refraction_img > img {
-          max-width: 50%
-        }
+        @media screen and (max-width: 2000px) and (min-width: 1200px) {
+          .tutorial-card {
+            font-size: 0.85em;
+          }
         }
         @media screen and (max-width: 1000px) {
           .tutorial-card {
             height: 40%;
             width: 100%;
+            font-size: 1em;
           }
 
           .tutorial {
@@ -2204,7 +2210,7 @@ exports["default"] = hybrids_1.define({
           height: 75%;
           overflow-y: scroll;
         }
-        
+
         }
 
         .tutorial-card {
