@@ -15,6 +15,7 @@ export declare class GameGrid {
     private endpointNum;
     private currentScale;
     private addParticleWithSuperposition;
+    private maxNumParticles;
     constructor();
     draw(p: p5): void;
     addParticle(p: p5, particleType: ParticleTypes, interferenceParams?: {
@@ -34,6 +35,7 @@ export declare class GameGrid {
     grid_drag_start(p: p5): void;
     grid_drag_end(p: p5): void;
     grid_drag_move(p: p5): void;
+    private max_recursion;
     private beam_loop_start;
     private beam_loop;
     private draw_beam;

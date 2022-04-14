@@ -685,6 +685,9 @@ class GameGrid {
         this.endpointNum = 0;
         this.currentScale = 1;
         this.addParticleWithSuperposition = false;
+        this.maxNumParticles = 200;
+        //handling of the laser beams
+        this.max_recursion = 20;
         //adds the direction to the index_array
         this.idxCalc = (arr, dir) => arr.map((num, idx) => num + dir[idx]);
         //checks if the index_array has indexes that are out of bounds
@@ -703,6 +706,9 @@ class GameGrid {
         //draw fields with objects
         this.grid.forEach((row, y_idx) => row.forEach((field_tile, x_idx) => field_tile.draw(p, x_idx, y_idx)));
         //draw particles
+        if (this.particles.length >= this.maxNumParticles) {
+            this.particles = this.particles.slice(this.particles.length - this.maxNumParticles);
+        }
         this.drawParticles(p);
         if (this.is_drag) {
             this.grid_drag_move(p);
@@ -932,13 +938,16 @@ class GameGrid {
         this.grid[this.dragY][this.dragX].set_dragged(false);
         [this.dragX, this.dragY] = [end_x, end_y];
     }
-    //handling of the laser beams
     beam_loop_start(p) {
         this.multiStartpoint.forEach(({ start, x, y }) => {
-            this.beam_loop([x, y], start.getDirections().pop(), p);
+            this.beam_loop([x, y], start.getDirections().pop(), p, 0);
         });
     }
-    beam_loop(startpoint, dir, p) {
+    beam_loop(startpoint, dir, p, rec_depth) {
+        if (rec_depth >= this.max_recursion) {
+            console.log("max recursion depth for laser beam reached. Well done trying to break the game.");
+            return;
+        }
         let idx_arr = [...startpoint];
         for (let i = 0; i < this.gridSize; i++) {
             idx_arr = this.idxCalc(idx_arr, dir);
@@ -954,7 +963,7 @@ class GameGrid {
                 }
                 //get new directions from next object and repeat beam_loop
                 let new_dirs = this.grid[idx_arr[1]][idx_arr[0]].get_directions(dir);
-                new_dirs.forEach((dir) => this.beam_loop([...idx_arr], dir, p));
+                new_dirs.forEach((dir) => this.beam_loop([...idx_arr], dir, p, rec_depth + 1));
                 break;
             }
         }
@@ -1843,9 +1852,14 @@ class MirrorGame {
             let particleChooser; // doesnt work with p5.Element
             let tutorial;
             let welcome;
-            let loadedLevelNumber = 0;
             let is_drag = false;
             p.setup = () => {
+                //lock screen orientation for mobile devices
+                if (p.windowHeight < 1000 || p.windowWidth < 1000) {
+                    screen.orientation.lock("portrait");
+                    console.log("locked");
+                }
+                console.log(screen.orientation);
                 //setup canvas
                 canvas = p.createCanvas(1000, 1000);
                 canvas.parent("mirror-game");
@@ -1954,9 +1968,9 @@ class MirrorGame {
                 playButton.addClass("play-btn");
                 nextLevelButton = p.createButton("Next Level");
                 nextLevelButton.mouseClicked(() => {
-                    loadedLevelNumber++;
-                    levelSelect.selected(`Level ${loadedLevelNumber}`);
-                    loadLevel(`level${loadedLevelNumber}`);
+                    const currentLevel = Number(levelSelect.selected().slice(-1));
+                    levelSelect.selected(`Level ${currentLevel + 1}`);
+                    loadLevel(`level${currentLevel + 1}`);
                     nextLevelButton.hide();
                 });
                 nextLevelButton.addClass("next-btn");
@@ -1983,7 +1997,6 @@ class MirrorGame {
                 tutorial = new tutorial_1.TutorialOverlay(canvas, p, gameGrid.gridSize, loadLevel, () => {
                     levelSelect.selected("Level 1");
                     loadLevel("level1");
-                    loadedLevelNumber = 1;
                     tutorial.remove();
                 }, () => {
                     tutorial.remove();
@@ -1991,7 +2004,6 @@ class MirrorGame {
                 welcome = new welcomescreen_1.WelcomeScreenOverlay(() => {
                     levelSelect.selected("Level 1");
                     loadLevel("level1");
-                    loadedLevelNumber = 1;
                     welcome.remove();
                 }, () => {
                     welcome.remove();
@@ -2002,11 +2014,7 @@ class MirrorGame {
                 welcome.start();
             };
             p.draw = () => {
-                // console.log(is_drag);
                 const fps = Number(fpsSlider.value());
-                if (fps == 0) {
-                    return;
-                }
                 p.frameRate(fps);
                 p.clear(0, 0, 0, 0);
                 // p.background("#334152");
@@ -2021,7 +2029,7 @@ class MirrorGame {
                     particleCounter = 0;
                 }
                 //check if next level button should be active
-                gameGrid.checkNextLevel()
+                gameGrid.checkNextLevel() && levelSelect.selected() !== "Sandbox" && levelSelect.selected() !== "Tutorial"
                     ? nextLevelButton.show()
                     : nextLevelButton.hide();
             };
@@ -2807,6 +2815,15 @@ const cardText = () => hybrids_1.html `
     You can choose to play the tutorial for some guidance and in-depth
     explanations or skip it and dive right into the game.
   </p>
+
+  <p class="github_p">
+    <span> You can also check out the source code on: </span>
+    <a href="https://github.com/QuantumMirrors/QuantumMirrors.github.io"
+      ><img src="/res/images/github_logo.png" /><img
+        class="github"
+        src="/res/images/github_logo_text.png"
+    /></a>
+  </p>
 `;
 function skipTutorial(host) {
     hybrids_1.dispatch(host, "custom-change", { detail: "skipTutorial" });
@@ -2855,10 +2872,45 @@ exports["default"] = hybrids_1.define({
           .welcome-card {
             bottom: ${cardY}px;
           }
+
+          .github_p {
+            display: inline-flex;
+            align-items: center;
+          }
+          .github_p > a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            width: 20%;
+            margin: 0;
+            padding-left: 1em;
+          }
+          .github {
+            width: 80%;
+          }
         }
         @media screen and (max-width: 500px) {
           .welcome-card {
             height: ${cardHeight * 1.2}px;
+          }
+        }
+        @media screen and (max-width: 1000px) {
+          .github_p {
+            display: grid;
+            align-items: center;
+            justify-content: center;
+          }
+          .github_p > a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            width: 100%;
+            height: 3em;
+          }
+          .github {
+            width: 20%;
           }
         }
 
@@ -2962,7 +3014,7 @@ class WelcomeScreenOverlay {
                 skipTutorialCallback();
             }
         });
-        welcome_component_1.welcome_update(this.overlay, 400, 300, 500, 300);
+        welcome_component_1.welcome_update(this.overlay, 0, 300, 500, 350);
     }
     start() {
         document.body.append(this.overlay);
