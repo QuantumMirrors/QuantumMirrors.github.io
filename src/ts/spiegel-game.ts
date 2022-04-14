@@ -6,6 +6,14 @@ import { ParticleTypes } from "./models/particle";
 import { TutorialOverlay } from "./tutorial";
 import { WelcomeScreenOverlay } from "./welcomescreen";
 
+/**
+ * Author: Marvin Rudolph
+ * Date: 14.04.2022
+ * 
+ * Note: This game was created as a bachelor thesis. You are free to use it and develop it further.
+ */
+
+
 export class MirrorGame {
   private sketch = (p: p5) => {
     let canvas: p5.Renderer;
@@ -27,16 +35,6 @@ export class MirrorGame {
     let is_drag = false;
 
     p.setup = () => {
-      //lock screen orientation for mobile devices
-      // if (p.windowHeight < 1000 || p.windowWidth < 1000) {
-      //   window.screen.orientation
-      //     .lock("portrait")
-      //     .then(() => console.log("lockered"))
-      //     .catch(() => console.log("error"));
-      //   console.log("locked");
-      // }
-      // console.log(window.screen.orientation);
-      
       //setup canvas
       canvas = p.createCanvas(1000, 1000);
       canvas.parent("mirror-game");

@@ -141,7 +141,7 @@ export default define<TutorialCard>({
           left: 0;
         }
 
-        @media screen and (min-width: 1000px) {
+        @media screen and (min-width: 1300px) {
           .tutorial-card {
             height: ${cardHeight}px;
             width: ${cardWidth}px;
@@ -149,16 +149,54 @@ export default define<TutorialCard>({
             top: ${cardY}px;
           }
 
+          img {
+            max-width: 100%;
+          }
+
           .refraction_img {
             display: flex;
           }
           .refraction_img > img {
-            max-width: 50%
+            max-width: 50%;
           }
         }
         @media screen and (max-width: 2000px) and (min-width: 1200px) {
           .tutorial-card {
             font-size: 0.85em;
+          }
+
+          img {
+            max-width: 100%;
+          }
+
+          .refraction_img {
+            display: flex;
+          }
+
+          .refraction_img > img {
+            max-width: 50%;
+          }
+        }
+
+        @media screen and (max-width: 1300px) and (min-width: 850px) {
+          .tutorial-card {
+            font-size: 0.65em;
+            height: ${cardHeight}px;
+            width: ${cardWidth + cardX / 2}px;
+            left: ${cardX / 2}px;
+            top: ${cardY}px;
+          }
+
+          img {
+            max-width: 70%;
+          }
+
+          .refraction_img {
+            display: flex;
+          }
+
+          .refraction_img > img {
+            max-width: 35%;
           }
         }
         @media screen and (max-width: 1000px) {
@@ -175,10 +213,10 @@ export default define<TutorialCard>({
           }
 
           .card-content {
-          width: auto;
-          height: 75%;
-          overflow-y: scroll;
-        }
+            width: auto;
+            height: 75%;
+            overflow-y: scroll;
+          }
 
         }
 
@@ -190,7 +228,6 @@ export default define<TutorialCard>({
           overflow: hidden;
 
           position: absolute;
-
 
           transition: left 2s, top 2s, width 2s, height 2s;
         }
@@ -226,14 +263,16 @@ export default define<TutorialCard>({
           color: white;
         }
 
-        <!-- .tutorial-card > #endButton {
+        .tutorial-card > #endButton {
           position: absolute;
           right: 0;
           top: 0;
           color: white;
           background: none;
         }
-        -- > .tutorial-card > h1,
+
+        
+        .tutorial-card > h1,
         h2,
         h3,
         h4,
@@ -249,15 +288,6 @@ export default define<TutorialCard>({
           right: 0;
           width: 100%;
           height: 100%;
-        }
-
-        img {
-          max-width: 100%;
-          max-height: 100%;
-        }
-
-        .mach_img{
-          <!-- height: 20% -->
         }
       </style>
     `,
