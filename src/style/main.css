@@ -21,11 +21,10 @@ body {
 
   font-family: "Arial";
 
-  
   touch-action: pinch-zoom;
 }
 
-/* doesnt work */
+/* name isnt accurate, but whatever*/
 .body-no-pan{
   overscroll-behavior: contain;
 }

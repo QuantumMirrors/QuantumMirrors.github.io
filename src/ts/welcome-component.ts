@@ -42,6 +42,15 @@ const cardText = () => html`
     You can choose to play the tutorial for some guidance and in-depth
     explanations or skip it and dive right into the game.
   </p>
+
+  <p class="github_p">
+    <span> You can also check out the source code on: </span>
+    <a href="https://github.com/QuantumMirrors/QuantumMirrors.github.io"
+      ><img src="/res/images/github_logo.png" /><img
+        class="github"
+        src="/res/images/github_logo_text.png"
+    /></a>
+  </p>
 `;
 
 function skipTutorial(host: any) {
@@ -94,10 +103,45 @@ export default define<WelcomeCard>({
           .welcome-card {
             bottom: ${cardY}px;
           }
+
+          .github_p {
+            display: inline-flex;
+            align-items: center;
+          }
+          .github_p > a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            width: 20%;
+            margin: 0;
+            padding-left: 1em;
+          }
+          .github {
+            width: 80%;
+          }
         }
         @media screen and (max-width: 500px) {
           .welcome-card {
             height: ${cardHeight * 1.2}px;
+          }
+        }
+        @media screen and (max-width: 1000px) {
+          .github_p {
+            display: grid;
+            align-items: center;
+            justify-content: center;
+          }
+          .github_p > a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            width: 100%;
+            height: 3em;
+          }
+          .github {
+            width: 20%;
           }
         }
 

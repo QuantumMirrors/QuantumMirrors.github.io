@@ -23,7 +23,7 @@ export class WelcomeScreenOverlay {
       }
     );
 
-    welcome_update(this.overlay, 400, 300, 500, 300);
+    welcome_update(this.overlay, 0, 300, 500, 350);
   }
 
   start() {

@@ -32,6 +32,7 @@ export class GameGrid {
   private currentScale = 1;
 
   private addParticleWithSuperposition = false;
+  private maxNumParticles = 200;
 
   constructor() {
     //initialize grid
@@ -50,6 +51,9 @@ export class GameGrid {
     );
 
     //draw particles
+    if(this.particles.length >= this.maxNumParticles){
+      this.particles = this.particles.slice(this.particles.length - this.maxNumParticles);
+    }
     this.drawParticles(p);
 
     if (this.is_drag) {
@@ -378,13 +382,20 @@ export class GameGrid {
   }
 
   //handling of the laser beams
+  private max_recursion = 20;
   private beam_loop_start(p: p5) {
+    
     this.multiStartpoint.forEach(({ start, x, y }) => {
-      this.beam_loop([x, y], start.getDirections().pop(), p);
+      this.beam_loop([x, y], start.getDirections().pop(), p, 0);
     });
   }
 
-  private beam_loop(startpoint: number[], dir: Direction, p: p5) {
+  private beam_loop(startpoint: number[], dir: Direction, p: p5, rec_depth: number) {
+    if(rec_depth >= this.max_recursion){
+      console.log("max recursion depth for laser beam reached. Well done trying to break the game.");
+      return;
+    }
+
     let idx_arr = [...startpoint];
     for (let i = 0; i < this.gridSize; i++) {
       idx_arr = this.idxCalc(idx_arr, dir);
@@ -404,7 +415,7 @@ export class GameGrid {
 
         //get new directions from next object and repeat beam_loop
         let new_dirs = this.grid[idx_arr[1]][idx_arr[0]].get_directions(dir);
-        new_dirs.forEach((dir) => this.beam_loop([...idx_arr], dir, p));
+        new_dirs.forEach((dir) => this.beam_loop([...idx_arr], dir, p, rec_depth+1));
 
         break;
       }

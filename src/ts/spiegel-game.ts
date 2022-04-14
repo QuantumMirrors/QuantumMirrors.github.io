@@ -24,11 +24,15 @@ export class MirrorGame {
     let tutorial: TutorialOverlay;
     let welcome: WelcomeScreenOverlay;
 
-    let loadedLevelNumber = 0;
-
     let is_drag = false;
 
     p.setup = () => {
+      //lock screen orientation for mobile devices
+      if(p.windowHeight < 1000 || p.windowWidth < 1000){
+        screen.orientation.lock("portrait");
+        console.log("locked");
+      }
+      console.log(screen.orientation);
       //setup canvas
       canvas = p.createCanvas(1000, 1000);
       canvas.parent("mirror-game");
@@ -154,9 +158,9 @@ export class MirrorGame {
 
       nextLevelButton = p.createButton("Next Level");
       nextLevelButton.mouseClicked(() => {
-        loadedLevelNumber++;
-        levelSelect.selected(`Level ${loadedLevelNumber}`);
-        loadLevel(`level${loadedLevelNumber}`);
+        const currentLevel = Number(levelSelect.selected().slice(-1));
+        levelSelect.selected(`Level ${currentLevel+1}`);
+        loadLevel(`level${currentLevel+1}`);
         nextLevelButton.hide();
       });
       nextLevelButton.addClass("next-btn");
@@ -193,7 +197,6 @@ export class MirrorGame {
         () => {
           levelSelect.selected("Level 1");
           loadLevel("level1");
-          loadedLevelNumber = 1;
           tutorial.remove();
         },
         () => {
@@ -204,7 +207,6 @@ export class MirrorGame {
         () => {
           levelSelect.selected("Level 1");
           loadLevel("level1");
-          loadedLevelNumber = 1;
           welcome.remove();
         },
         () => {
@@ -219,12 +221,7 @@ export class MirrorGame {
     };
 
     p.draw = () => {
-      // console.log(is_drag);
-
       const fps = Number(fpsSlider.value());
-      if (fps == 0) {
-        return;
-      }
       p.frameRate(fps);
 
       p.clear(0, 0, 0, 0);
@@ -246,7 +243,7 @@ export class MirrorGame {
       }
 
       //check if next level button should be active
-      gameGrid.checkNextLevel()
+      gameGrid.checkNextLevel() && levelSelect.selected() !== "Sandbox" && levelSelect.selected() !== "Tutorial"
         ? nextLevelButton.show()
         : nextLevelButton.hide();
     };
