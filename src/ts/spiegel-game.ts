@@ -28,11 +28,14 @@ export class MirrorGame {
 
     p.setup = () => {
       //lock screen orientation for mobile devices
-      if(p.windowHeight < 1000 || p.windowWidth < 1000){
-        screen.orientation.lock("portrait");
+      if (p.windowHeight < 1000 || p.windowWidth < 1000) {
+        window.screen.orientation
+          .lock("portrait")
+          .then(() => console.log("lockered"))
+          .catch(() => console.log("error"));
         console.log("locked");
       }
-      console.log(screen.orientation);
+      console.log(window.screen.orientation);
       //setup canvas
       canvas = p.createCanvas(1000, 1000);
       canvas.parent("mirror-game");
@@ -54,7 +57,9 @@ export class MirrorGame {
             is_drag = true;
             gameGrid.grid_drag_start(p);
 
-            document.getElementsByTagName("body")[0].classList.add("body-no-pan");
+            document
+              .getElementsByTagName("body")[0]
+              .classList.add("body-no-pan");
           }
         }, 250);
       });
@@ -77,7 +82,9 @@ export class MirrorGame {
           gameGrid.grid_drag_end(p);
           is_drag = false;
 
-          document.getElementsByTagName("body")[0].classList.remove("body-no-pan");
+          document
+            .getElementsByTagName("body")[0]
+            .classList.remove("body-no-pan");
         }
       });
 
@@ -159,8 +166,8 @@ export class MirrorGame {
       nextLevelButton = p.createButton("Next Level");
       nextLevelButton.mouseClicked(() => {
         const currentLevel = Number(levelSelect.selected().slice(-1));
-        levelSelect.selected(`Level ${currentLevel+1}`);
-        loadLevel(`level${currentLevel+1}`);
+        levelSelect.selected(`Level ${currentLevel + 1}`);
+        loadLevel(`level${currentLevel + 1}`);
         nextLevelButton.hide();
       });
       nextLevelButton.addClass("next-btn");
@@ -243,7 +250,9 @@ export class MirrorGame {
       }
 
       //check if next level button should be active
-      gameGrid.checkNextLevel() && levelSelect.selected() !== "Sandbox" && levelSelect.selected() !== "Tutorial"
+      gameGrid.checkNextLevel() &&
+      levelSelect.selected() !== "Sandbox" &&
+      levelSelect.selected() !== "Tutorial"
         ? nextLevelButton.show()
         : nextLevelButton.hide();
     };
